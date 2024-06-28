@@ -1,0 +1,6 @@
+- Name: Foxeline
+  Version: 1.7.0
+  DLL: bin/Foxeline.dll
+  Dependencies:
+    - Name: EverestCore
+      Version: 1.4673.0
