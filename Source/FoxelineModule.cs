@@ -86,12 +86,12 @@ namespace Celeste.Mod.Foxeline
             }
         }
 
+        /// <summary>
+        /// Draws the tail of the player based on the tail positions defined under selfData and the hair offset
+        /// </summary>
+        /// <param name="self">The PlayerHair object</param>
+        /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
         public static void drawTail(PlayerHair self, DynamicData selfData) {
-            /// <summary>
-            /// Draws the tail of the player based on the tail positions defined under selfData and the hair offset
-            /// </summary>
-            /// <param name="self">The PlayerHair object</param>
-            /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
             List<Vector2> tailOffset = selfData.Get<List<Vector2>>(FoxelineConst.TailOffset);
             int currentVariant = (int)FoxelineModule.Settings.Tail - 1 + FoxelineConst.Variants * (FoxelineModule.Settings.TailScale > 100 ? 1 : 0);
             //repeat but fill this time
@@ -195,14 +195,14 @@ namespace Celeste.Mod.Foxeline
             }
         }
 
+        /// <summary>
+        /// Helper function to get the hair color of the player based on the current animation
+        /// </summary>
+        /// <param name="hairNodeIndex">The index of the hair color</param>
+        /// <param name="self">The PlayerHair object</param>
+        /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
+        /// <returns>The smarter hair color of the player</returns>
         public static Color getHairColor(int hairNodeIndex, PlayerHair self, DynamicData selfData) {
-            /// <summary>
-            /// Helper function to get the hair color of the player based on the current animation
-            /// </summary>
-            /// <param name="hairNodeIndex">The index of the hair color</param>
-            /// <param name="self">The PlayerHair object</param>
-            /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-            /// <returns>The smarter hair color of the player</returns>
             
             if (!(FoxelineModule.Settings.FixCutscenes && self is {
                 Entity: Player player,
