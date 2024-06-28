@@ -1,5 +1,6 @@
 namespace Celeste.Mod.Foxeline;
 
-public class FoxelineModuleSession : EverestModuleSession {
+public class FoxelineModuleSession : EverestModuleSession
+{
 
 }

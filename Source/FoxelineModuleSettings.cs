@@ -10,10 +10,10 @@ namespace Celeste.Mod.Foxeline
     public class FoxelineModuleSettings : EverestModuleSettings
     {
         public TailVariant Tail { get; set; } = TailVariant.Furry;
-        [SettingRange(0, 100 , true)] 
+        [SettingRange(0, 100, true)]
         public int TailBrushTint { get; set; } = 15;
 
-        [SettingRange(25, 175 , true)]
+        [SettingRange(25, 175, true)]
         public int TailScale { get; set; } = 100;
         public bool FeatherTail { get; set; } = true;
         public bool PaintBrushTail { get; set; } = false;
@@ -33,20 +33,21 @@ namespace Celeste.Mod.Foxeline
         public Constants FoxelineConstants { get; set; } = new Constants();
 
         [SettingSubMenu]
-        public class Constants {
-            [SettingRange(0, 100 , true)]
+        public class Constants
+        {
+            [SettingRange(0, 100, true)]
             public int droopSwayAmplitude { get; set; } = 20;
-            [SettingRange(0, 100 , true)]
+            [SettingRange(0, 100, true)]
             public int droopSwayFrequency { get; set; } = 20;
-            [SettingRange(1, 100 , true)]
+            [SettingRange(1, 100, true)]
             public int droopSwaySpeed { get; set; } = 30;
-            [SettingRange(0, 100 , true)] 
+            [SettingRange(0, 100, true)]
             public int Control { get; set; } = 60;
-            [SettingRange(0, 99 , true)] 
+            [SettingRange(0, 99, true)]
             public int Speed { get; set; } = 90;
-            [SettingRange(0, 100 , true)] 
+            [SettingRange(0, 100, true)]
             public int Softness { get; set; } = 30;
-            [SettingRange(0, 8 , false)]
+            [SettingRange(0, 8, false)]
             public int CollectHairLength { get; set; } = 2;
 
 

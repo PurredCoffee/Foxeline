@@ -1,5 +1,6 @@
 namespace Celeste.Mod.Foxeline;
 
-public class FoxelineModuleSaveData : EverestModuleSaveData {
+public class FoxelineModuleSaveData : EverestModuleSaveData
+{
 
 }
