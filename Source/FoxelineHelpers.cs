@@ -34,17 +34,26 @@ namespace Celeste.Mod.Foxeline
         {
             List<Vector2> tailOffset = selfData.Get<List<Vector2>>(FoxelineConst.TailOffset);
             int currentVariant = (int)FoxelineModule.Settings.Tail - 1 + FoxelineConst.Variants * (FoxelineModule.Settings.TailScale > 100 ? 1 : 0);
+            Color[] gradient = new Color[self.Sprite.HairCount];
+            for (int i = 0; i < self.Sprite.HairCount; i++)
+            {
+                gradient[i] = getHairColor(i, self, selfData);
+            }
             //repeat but fill this time
             for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
             {
                 MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
                 bool fill = (i < FoxelineConst.tailLen * (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f) != FoxelineModule.Settings.PaintBrushTail;
                 //fill color is either the hair color or a blend of white and the hair color at the tip of the tail and the base of the tail (sometimes visible)
+                float lerp = Math.Min((float)i / FoxelineConst.tailLen, 1) * self.Sprite.HairCount;
+                int hairNodeIndex = (int)lerp;
+                int nextHairNodeIndex = Math.Min(hairNodeIndex + 1, self.Sprite.HairCount - 1);
+                Color fullColor = Color.Lerp(gradient[hairNodeIndex], gradient[nextHairNodeIndex], lerp % 1);
                 Color color = fill
-                    ? getHairColor(i, self, selfData)
+                    ? fullColor
                     : Color.Lerp(
                         Color.White,
-                        getHairColor(i, self, selfData),
+                        fullColor,
                         FoxelineModule.Settings.TailBrushTint / 100f);
                 Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();
                 Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
@@ -176,11 +185,11 @@ namespace Celeste.Mod.Foxeline
             if (selfData.TryGet("smh_hairConfig", out var hairConfig))
             {
                 //anything can be null here - use null conditional operator to avoid null reference exceptions
-                Dictionary<int, List<Color>> hairColors = (Dictionary<int, List<Color>>)hairConfig.GetType()?.GetField("actualHairColors")?.GetValue(hairConfig);
+                Dictionary<int, List<Color>> hairColors = (Dictionary<int, List<Color>>)hairConfig.GetType()?.GetField("ActualHairColors")?.GetValue(hairConfig);
                 if (hairColors is not null)
                 {
                     //we found something that looks like a hairConfig from SMH PLUS
-                    if (hairColors?.ContainsKey(hairNodeIndex) ?? false)
+                    if (!hairColors.ContainsKey(hairNodeIndex))
                         //fallback to default hair color if the hairConfig is broken
                         hairNodeIndex = 100;
                     dashes = Math.Max(Math.Min(dashes, hairColors[hairNodeIndex].Count - 1), 0);
