@@ -119,6 +119,17 @@ namespace Celeste.Mod.Foxeline
                             ),
                         1f);
 
+                    //if we just landed from the big temple fall, make the tail also follow through
+                    //makes it look more natural
+
+                    //note: fallPose's frame 0 lasts for 6 frames, so this'll be run for 6 frames
+                    if (self.Sprite is { CurrentAnimationID: "fallPose", CurrentAnimationFrame: 0 })
+                    {
+                        //i just made up some formula with some trial and error and it looks good..? i guess?
+                        //- Snip
+                        tailVelocities[i] = tailVelocities[i] with { Y = MathF.Exp(i/FoxelineConst.tailLen) + FoxelineConst.tailSize[i] };
+                    }
+
                     //while flying, keep tail as trail
                     if (self.Sprite.CurrentAnimationID == "starFly")
                         tailVelocities[i] = Vector2.Zero;
@@ -137,6 +148,7 @@ namespace Celeste.Mod.Foxeline
                 tailOffsets[i] = tailPositions[i] - self.Nodes[0];
             }
         }
+
         public static void PlayerHair_Render(On.Celeste.PlayerHair.orig_Render orig, PlayerHair self)
         {
             //only handle tail if:
