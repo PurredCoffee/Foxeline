@@ -8,8 +8,18 @@ namespace Celeste.Mod.Foxeline
         public const string Velocity = "foxeline_velocity";
         public const string TailPositions = "foxeline_tail_pos";
         public const string TailOffset = "foxeline_tail_offset";
+        
+        public const string HasTail = "foxeline_has_tail";
+        public const string TailVariant = "foxeline_tail_variant";
+        public const string TailScale = "foxeline_tail_scale";
+        public const string TailBrushTint = "foxeline_tail_brush_tint";
+        public const string TailPaintBrush = "foxeline_tail_paintbrush";
+        public const string TailFeather = "foxeline_tail_feather";
+
+
         public const int Variants = 3;
         public const string GravHelperFlip = "GravityHelper_Inverted";
+        public const string smh_hairConfig = "smh_hairConfig";
 
         public static readonly Dictionary<string, Vector2> customTailPositions = new Dictionary<string, Vector2>(){
             {"starFly", new Vector2(0,0)},

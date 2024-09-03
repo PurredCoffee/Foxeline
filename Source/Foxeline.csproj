@@ -26,6 +26,7 @@
         <PackageReference Include="CelesteMod.Publicizer" Version="*" CelesteAssembly="$(CelestePrefix)\Celeste.dll" />
         <Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll" Private="false" />
         <Reference Include="$(CelestePrefix)\FNA.dll" Private="false" />
+        <Reference Include="..\..\CelesteNet.Client\CelesteNet.Client.dll" Private="false" />
     </ItemGroup>
 
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\bin\$(AssemblyName).dll;..\bin\$(AssemblyName).pdb">

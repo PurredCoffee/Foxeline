@@ -9,6 +9,7 @@ namespace Celeste.Mod.Foxeline
     }
     public class FoxelineModuleSettings : EverestModuleSettings
     {
+        public bool EnableFoxeline { get; set; } = true;
         public TailVariant Tail { get; set; } = TailVariant.Furry;
         [SettingRange(0, 100, true)]
         public int TailBrushTint { get; set; } = 15;
@@ -26,11 +27,28 @@ namespace Celeste.Mod.Foxeline
         [SettingSubText("(VANILLA/SMH PLUS ONLY)")]
         public bool FixCutscenes { get; set; } = true;
 
-        [SettingSubText("VERY EXPERIMENTAL, Might look weird")]
-        public bool CollectHair { get; set; } = false;
+        public BadelineTailDefaults BadelineDefaults { get; set; } = new BadelineTailDefaults();
+        public TailDefaults CelestenetDefaults { get; set; } = new TailDefaults();
 
-        [SettingSubText("VERY EXPERIMENTAL, USE AT YOUR OWN RISK")]
+        [SettingSubText("MIGHT LOOK WEIRD, not Synced with other players")]
         public Constants FoxelineConstants { get; set; } = new Constants();
+
+        [SettingSubMenu]
+        public class TailDefaults
+        {
+            public TailVariant Tail { get; set; } = TailVariant.Furry;
+            [SettingRange(0, 100, true)]
+            public int TailBrushTint { get; set; } = 15;
+
+            [SettingRange(25, 175, true)]
+            public int TailScale { get; set; } = 100;
+            public bool FeatherTail { get; set; } = true;
+            public bool PaintBrushTail { get; set; } = false;
+        }
+        [SettingSubMenu]
+        public class BadelineTailDefaults : TailDefaults {
+            public bool EnableBangs { get; set; } = true;
+        }
 
         [SettingSubMenu]
         public class Constants
@@ -47,8 +65,6 @@ namespace Celeste.Mod.Foxeline
             public int Speed { get; set; } = 90;
             [SettingRange(0, 100, true)]
             public int Softness { get; set; } = 30;
-            [SettingRange(0, 8, false)]
-            public int CollectHairLength { get; set; } = 2;
 
 
         }

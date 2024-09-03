@@ -11,18 +11,21 @@ namespace Celeste.Mod.Foxeline
     {
         public static void PlayerHair_AfterUpdate(On.Celeste.PlayerHair.orig_AfterUpdate orig, PlayerHair self)
         {
-
+            //if foxeline is disabled, don't update the tail
             orig(self);
+            if(!FoxelineModule.Settings.EnableFoxeline)
+            {
+                return;
+            }
+            DynamicData selfData = DynamicData.For(self);
 
             //only handle tail if:
-            //- it's enabled
             //- the entity is a tail owner
-            if (FoxelineModule.Settings.Tail == TailVariant.None || !FoxelineHelpers.correctTailOwner(self))
+            if (!FoxelineHelpers.correctTailOwner(self) || FoxelineHelpers.getTailVariant(selfData, self) == TailVariant.None)
             {
                 return;
             }
 
-            DynamicData selfData = DynamicData.For(self);
             //List<T> is a reference type - this means that modifying these lists will modify the lists in DynamicData
             //simplifies code and improves performance - a double whammy
             List<Vector2> tailPositions = selfData.Get<List<Vector2>>(FoxelineConst.TailPositions);
@@ -54,6 +57,9 @@ namespace Celeste.Mod.Foxeline
 
             tailOffsets[0] = offset * faceDirection;
             tailPositions[0] = self.Nodes[0] + tailOffsets[0];
+
+            //cache dynamic data for performance
+            float tailScale = FoxelineHelpers.getTailScale(selfData, self);
 
             for (int i = 1; i < FoxelineConst.tailLen; i++)
             {
@@ -104,10 +110,10 @@ namespace Celeste.Mod.Foxeline
                     if (stretchTail) tailDir *= 0.95f;
 
                     //we clamp the tail piece into reach for the other tail piece as it has moved
-                    FoxelineHelpers.clampTail(tailPositions, i);
+                    FoxelineHelpers.clampTail(tailPositions, i, tailScale);
 
                     //the position each part of the tail want to reach
-                    Vector2 basePos = tailPositions[i - 1] + tailDir * FoxelineConst.tailSize[i] * (FoxelineModule.Settings.TailScale / 100f) * faceDirection;
+                    Vector2 basePos = tailPositions[i - 1] + tailDir * FoxelineConst.tailSize[i] * tailScale * faceDirection;
 
                     //the tail tries to get into position and accelerates towards it or breaks towards it
                     tailVelocities[i] = Calc.LerpSnap(
@@ -141,7 +147,7 @@ namespace Celeste.Mod.Foxeline
                 }
 
                 //we clamp the tail piece into reach for the other tail piece as the current tail has moved
-                FoxelineHelpers.clampTail(tailPositions, i);
+                FoxelineHelpers.clampTail(tailPositions, i, tailScale);
 
                 //update the tail offset for rendering because celeste will sometimes not use hair_move function
                 //this is a bugfix
@@ -151,22 +157,28 @@ namespace Celeste.Mod.Foxeline
 
         public static void PlayerHair_Render(On.Celeste.PlayerHair.orig_Render orig, PlayerHair self)
         {
-            //only handle tail if:
-            //- it's enabled
-            //- the entity is a tail owner
-            if (FoxelineModule.Settings.Tail == TailVariant.None || !FoxelineHelpers.correctTailOwner(self))
+            //if foxeline is disabled, don't render the tail
+            if(!FoxelineModule.Settings.EnableFoxeline)
             {
                 orig(self);
                 return;
             }
 
             DynamicData selfData = DynamicData.For(self);
+            //only handle tail if:
+            //- it's enabled
+            //- the entity is a tail owner
+            if (FoxelineHelpers.getTailVariant(selfData, self) == TailVariant.None || !FoxelineHelpers.correctTailOwner(self))
+            {
+                orig(self);
+                return;
+            }
 
             //special case for star fly
             if (self.Sprite.CurrentAnimationID == "starFly")
             {
                 //Dont draw the tail if disabled
-                if (!FoxelineModule.Settings.FeatherTail)
+                if (!FoxelineHelpers.getFeatherTail(selfData, self))
                 {
                     orig(self);
                     return;
@@ -180,13 +192,6 @@ namespace Celeste.Mod.Foxeline
                 self.Sprite.Texture.Draw(pos - Vector2.UnitY, self.Sprite.Origin, Color.Black, self.Sprite.Scale);
                 FoxelineHelpers.drawTailOutline(self, selfData);
                 FoxelineHelpers.drawTail(self, selfData);
-                return;
-            }
-
-            //draw the tail and the hair after
-            if (FoxelineModule.Settings.CollectHair)
-            {
-                FoxelineHelpers.Collective_Render(self, selfData);
                 return;
             }
 
@@ -236,10 +241,14 @@ namespace Celeste.Mod.Foxeline
         public static MTexture Hair_GetTexture(On.Celeste.PlayerHair.orig_GetHairTexture orig, PlayerHair self, int index)
         {
             //change bangs texture if:
-            //- bangs are enabled
             //- the current hair piece is the first one
-            //- the object is a tail owner
-            if (!FoxelineModule.Settings.EnableBangs || index != 0 || !FoxelineHelpers.correctTailOwner(self))
+            //and
+            //- bangs are enabled
+            //- the object is the player
+            //or
+            //- badeline bangs are enabled
+            //- the object is badeline
+            if(!FoxelineModule.Settings.EnableFoxeline || index != 0 || !FoxelineHelpers.shouldChangeHair(self))
                 return orig(self, index);
 
             if (self.Sprite.HairFrame >= FoxelineModule.Instance.bangs.Count || self.Sprite.HairFrame < 0)
