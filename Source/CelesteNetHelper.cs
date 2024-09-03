@@ -78,6 +78,12 @@ public class TailComponent : CelesteNetGameComponent {
         }
     }
 
+    public void SendTailData() {
+        if(ctx.Client?.PlayerInfo != null) {
+            ctx.Client.Send(new TailData(ctx.Client.PlayerInfo));
+        }
+    }
+
     public void Handle(CelesteNetConnection con, TailData data) {
         if(data.Player != null) {
             TailInformation[data.Player.ID] = data.TailInformation;

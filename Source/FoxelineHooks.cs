@@ -9,16 +9,12 @@ namespace Celeste.Mod.Foxeline
 {
     public static class FoxelineHooks
     {
+        public static FoxelineModuleSettings.TailDefaults oldSettings;
         public static void PlayerHair_AfterUpdate(On.Celeste.PlayerHair.orig_AfterUpdate orig, PlayerHair self)
         {
-            //if foxeline is disabled, don't update the tail
             orig(self);
-            if(!FoxelineModule.Settings.EnableFoxeline)
-            {
-                return;
-            }
-            DynamicData selfData = DynamicData.For(self);
 
+            DynamicData selfData = DynamicData.For(self);
             //only handle tail if:
             //- the entity is a tail owner
             if (!FoxelineHelpers.correctTailOwner(self) || FoxelineHelpers.getTailVariant(self) == TailVariant.None)
@@ -157,13 +153,6 @@ namespace Celeste.Mod.Foxeline
 
         public static void PlayerHair_Render(On.Celeste.PlayerHair.orig_Render orig, PlayerHair self)
         {
-            //if foxeline is disabled, don't render the tail
-            if(!FoxelineModule.Settings.EnableFoxeline)
-            {
-                orig(self);
-                return;
-            }
-
             DynamicData selfData = DynamicData.For(self);
             //only handle tail if:
             //- it's enabled
@@ -248,7 +237,7 @@ namespace Celeste.Mod.Foxeline
             //or
             //- badeline bangs are enabled
             //- the object is badeline
-            if(!FoxelineModule.Settings.EnableFoxeline || index != 0 || !FoxelineHelpers.shouldChangeHair(self))
+            if(index != 0 || !FoxelineHelpers.shouldChangeHair(self))
                 return orig(self, index);
 
             if (self.Sprite.HairFrame >= FoxelineModule.Instance.bangs.Count || self.Sprite.HairFrame < 0)

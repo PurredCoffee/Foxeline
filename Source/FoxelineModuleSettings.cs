@@ -9,7 +9,6 @@ namespace Celeste.Mod.Foxeline
     }
     public class FoxelineModuleSettings : EverestModuleSettings
     {
-        public bool EnableFoxeline { get; set; } = true;
         public TailVariant Tail { get; set; } = TailVariant.Furry;
         [SettingRange(0, 100, true)]
         public int TailBrushTint { get; set; } = 15;
@@ -27,7 +26,10 @@ namespace Celeste.Mod.Foxeline
         [SettingSubText("(VANILLA/SMH PLUS ONLY)")]
         public bool FixCutscenes { get; set; } = true;
 
-        public BadelineTailDefaults BadelineDefaults { get; set; } = new BadelineTailDefaults();
+        [SettingSubText("Badeline's tail configuration")]
+        public BadelineTailDefaults BadelineTail { get; set; } = new BadelineTailDefaults();
+
+        [SettingSubText("Configuration for CelesteNet Ghosts that do not have Foxeline installed")]
         public TailDefaults CelestenetDefaults { get; set; } = new TailDefaults();
 
         [SettingSubText("MIGHT LOOK WEIRD, not Synced with other players")]
@@ -36,10 +38,9 @@ namespace Celeste.Mod.Foxeline
         [SettingSubMenu]
         public class TailDefaults
         {
-            public TailVariant Tail { get; set; } = TailVariant.Furry;
+            public TailVariant Tail { get; set; } = TailVariant.None;
             [SettingRange(0, 100, true)]
             public int TailBrushTint { get; set; } = 15;
-
             [SettingRange(25, 175, true)]
             public int TailScale { get; set; } = 100;
             public bool FeatherTail { get; set; } = true;
@@ -47,6 +48,7 @@ namespace Celeste.Mod.Foxeline
         }
         [SettingSubMenu]
         public class BadelineTailDefaults : TailDefaults {
+            public new TailVariant Tail { get; set; } = TailVariant.Flat;
             public bool EnableBangs { get; set; } = true;
         }
 

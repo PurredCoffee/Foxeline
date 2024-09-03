@@ -54,7 +54,7 @@ namespace Celeste.Mod.Foxeline
             }
             if(isBadelineHair(self))
             {
-                return FoxelineModule.Settings.BadelineDefaults.Tail;
+                return FoxelineModule.Settings.BadelineTail.Tail;
             }
             if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
                 return tail.Tail;
@@ -75,7 +75,7 @@ namespace Celeste.Mod.Foxeline
             }
             if(isBadelineHair(self))
             {
-                return FoxelineModule.Settings.BadelineDefaults.TailScale / 100f;
+                return FoxelineModule.Settings.BadelineTail.TailScale / 100f;
             }
             if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
                 return tail.TailScale / 100f;
@@ -96,7 +96,7 @@ namespace Celeste.Mod.Foxeline
             }
             if(isBadelineHair(self))
             {
-                return FoxelineModule.Settings.BadelineDefaults.PaintBrushTail;
+                return FoxelineModule.Settings.BadelineTail.PaintBrushTail;
             }
             if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
                 return tail.PaintBrushTail;
@@ -117,7 +117,7 @@ namespace Celeste.Mod.Foxeline
             }
             if(isBadelineHair(self))
             {
-                return FoxelineModule.Settings.BadelineDefaults.TailBrushTint / 100f;
+                return FoxelineModule.Settings.BadelineTail.TailBrushTint / 100f;
             }
             if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
                 return tail.TailBrushTint / 100f;
@@ -138,7 +138,7 @@ namespace Celeste.Mod.Foxeline
             }
             if(isBadelineHair(self))
             {
-                return FoxelineModule.Settings.BadelineDefaults.FeatherTail;
+                return FoxelineModule.Settings.BadelineTail.FeatherTail;
             }
             if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
                 return tail.FeatherTail;
@@ -381,6 +381,6 @@ namespace Celeste.Mod.Foxeline
         /// <param name="self">The PlayerHair object</param>
         /// <returns>True if the hair should be changed</returns>
         public static bool shouldChangeHair(PlayerHair self)
-            => (isPlayerHair(self) && FoxelineModule.Settings.EnableBangs) || (isBadelineHair(self) && FoxelineModule.Settings.BadelineDefaults.EnableBangs);
+            => (isPlayerHair(self) && FoxelineModule.Settings.EnableBangs) || (isBadelineHair(self) && FoxelineModule.Settings.BadelineTail.EnableBangs);
     }
 }
