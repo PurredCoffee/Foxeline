@@ -12,6 +12,32 @@ using System.Linq;
 
 namespace Celeste.Mod.Foxeline
 {
+    
+    public static class TailNetHelper {
+        public static bool TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail) {
+            if(FoxelineHelpers.isCnetInstalled()) {
+                _TryGetTailInformation(hair, out tail);
+                if(tail != null) {
+                    return true;
+                }
+            }
+            tail = null;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static bool _TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail) {
+            if(hair.Entity is Ghost ghost) {
+                if(TailComponent.TailInformation.TryGetValue(ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults? tailInfo)) {
+                    tail = tailInfo;
+                    return true;
+                }
+            }
+            tail = null;
+            return false;
+        }
+    }
+
     public static class FoxelineHelpers
     {
         /// <summary>
@@ -20,7 +46,7 @@ namespace Celeste.Mod.Foxeline
         /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>TailVariant enum corresponding to the tail</returns>
-        public static TailVariant getTailVariant(DynamicData selfData, PlayerHair self)
+        public static TailVariant getTailVariant(PlayerHair self)
         {
             if(isPlayerHair(self))
             {
@@ -30,7 +56,9 @@ namespace Celeste.Mod.Foxeline
             {
                 return FoxelineModule.Settings.BadelineDefaults.Tail;
             }
-            // TODO: Implement Celestenet ghost tail
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.Tail;
+            }
             return FoxelineModule.Settings.CelestenetDefaults.Tail;
         }
         /// <summary>
@@ -39,7 +67,7 @@ namespace Celeste.Mod.Foxeline
         /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>scaling factor of the tail</returns>
-        public static float getTailScale(DynamicData selfData, PlayerHair self)
+        public static float getTailScale(PlayerHair self)
         {
             if(isPlayerHair(self))
             {
@@ -49,6 +77,9 @@ namespace Celeste.Mod.Foxeline
             {
                 return FoxelineModule.Settings.BadelineDefaults.TailScale / 100f;
             }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.TailScale / 100f;
+            }
             return FoxelineModule.Settings.CelestenetDefaults.TailScale / 100f;
         }
         /// <summary>
@@ -57,7 +88,7 @@ namespace Celeste.Mod.Foxeline
         /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>True if tail should be painted as a brush</returns>
-        public static bool getPaintBrushTail(DynamicData selfData, PlayerHair self)
+        public static bool getPaintBrushTail(PlayerHair self)
         {
             if(isPlayerHair(self))
             {
@@ -67,6 +98,9 @@ namespace Celeste.Mod.Foxeline
             {
                 return FoxelineModule.Settings.BadelineDefaults.PaintBrushTail;
             }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.PaintBrushTail;
+            }
             return FoxelineModule.Settings.CelestenetDefaults.PaintBrushTail;
         }
         /// <summary>
@@ -75,7 +109,7 @@ namespace Celeste.Mod.Foxeline
         /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>Color multiplier for the tip of the tail</returns>
-        public static float getTailBrushTint(DynamicData selfData, PlayerHair self)
+        public static float getTailBrushTint(PlayerHair self)
         {
             if(isPlayerHair(self))
             {
@@ -85,6 +119,9 @@ namespace Celeste.Mod.Foxeline
             {
                 return FoxelineModule.Settings.BadelineDefaults.TailBrushTint / 100f;
             }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.TailBrushTint / 100f;
+            }
             return FoxelineModule.Settings.CelestenetDefaults.TailBrushTint / 100f;
         }
         /// <summary>
@@ -93,7 +130,7 @@ namespace Celeste.Mod.Foxeline
         /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>True if the tail should be drawn while player is in feather</returns>
-        public static bool getFeatherTail(DynamicData selfData, PlayerHair self)
+        public static bool getFeatherTail(PlayerHair self)
         {
             if(isPlayerHair(self))
             {
@@ -102,6 +139,9 @@ namespace Celeste.Mod.Foxeline
             if(isBadelineHair(self))
             {
                 return FoxelineModule.Settings.BadelineDefaults.FeatherTail;
+            }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.FeatherTail;
             }
             return FoxelineModule.Settings.CelestenetDefaults.FeatherTail;
         }
@@ -129,7 +169,7 @@ namespace Celeste.Mod.Foxeline
         public static void drawTail(PlayerHair self, DynamicData selfData)
         {
             List<Vector2> tailOffset = selfData.Get<List<Vector2>>(FoxelineConst.TailOffset);
-            int currentVariant = (int)getTailVariant(selfData, self) - 1 + FoxelineConst.Variants * (getTailScale(selfData, self) > 1 ? 1 : 0);
+            int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (getTailScale(self) > 1 ? 1 : 0);
             Color[] gradient = new Color[self.Sprite.HairCount];
             for (int i = 0; i < self.Sprite.HairCount; i++)
             {
@@ -139,7 +179,7 @@ namespace Celeste.Mod.Foxeline
             for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
             {
                 MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
-                bool fill = (i < FoxelineConst.tailLen * (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f) != getPaintBrushTail(selfData, self);
+                bool fill = (i < FoxelineConst.tailLen * (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f) != getPaintBrushTail(self);
                 //fill color is either the hair color or a blend of white and the hair color at the tip of the tail and the base of the tail (sometimes visible)
                 float lerp = Math.Min((float)i / FoxelineConst.tailLen, 1) * self.Sprite.HairCount;
                 int hairNodeIndex = (int)lerp;
@@ -150,10 +190,10 @@ namespace Celeste.Mod.Foxeline
                     : Color.Lerp(
                         Color.White,
                         fullColor,
-                        getTailBrushTint(selfData, self));
+                        getTailBrushTint(self));
                 Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();
                 Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
-                float Scale = getTailScale(selfData, self) / (getTailScale(selfData, self) > 1 ? 2 : 1);
+                float Scale = getTailScale(self) / (getTailScale(self) > 1 ? 2 : 1);
                 tex.Draw(position, center, color, Scale);
             }
         }
@@ -166,7 +206,7 @@ namespace Celeste.Mod.Foxeline
         public static void drawTailOutline(PlayerHair self, DynamicData selfData)
         {
             List<Vector2> tailOffset = selfData.Get<List<Vector2>>(FoxelineConst.TailOffset);
-            int currentVariant = (int)getTailVariant(selfData, self) - 1 + FoxelineConst.Variants * (getTailScale(selfData, self) > 1 ? 1 : 0);
+            int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (getTailScale(self) > 1 ? 1 : 0);
             for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
             {
                 //we select the current tail piece. tailID is currently baked and chosen to be pretty
@@ -174,7 +214,7 @@ namespace Celeste.Mod.Foxeline
                 //we calculate the position of the texture by offsetting it by half its size
                 Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();
                 Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
-                float Scale = getTailScale(selfData, self) / (getTailScale(selfData, self) > 1 ? 2 : 1);
+                float Scale = getTailScale(self) / (getTailScale(self) > 1 ? 2 : 1);
                 tex.Draw(position + Vector2.UnitX, center, Color.Black, Scale);
                 tex.Draw(position + Vector2.UnitY, center, Color.Black, Scale);
                 tex.Draw(position - Vector2.UnitX, center, Color.Black, Scale);
@@ -196,7 +236,7 @@ namespace Celeste.Mod.Foxeline
             //only handle tail if:
             //- it's enabled
             //- the entity is a Player
-            if (getTailVariant(selfData, self) == TailVariant.None || self.Entity is not Player)
+            if (getTailVariant(self) == TailVariant.None || self.Entity is not Player)
                 return self.GetHairColor(hairNodeIndex);
 
             Dictionary<string, int> CutsceneToDashLookup = self.Sprite.EntityAs<Player>().Inventory.Backpack
@@ -341,6 +381,6 @@ namespace Celeste.Mod.Foxeline
         /// <param name="self">The PlayerHair object</param>
         /// <returns>True if the hair should be changed</returns>
         public static bool shouldChangeHair(PlayerHair self)
-            => (isPlayerHair(self) && FoxelineModule.Settings.EnableFoxeline) || (isBadelineHair(self) && FoxelineModule.Settings.BadelineDefaults.EnableBangs);
+            => (isPlayerHair(self) && FoxelineModule.Settings.EnableBangs) || (isBadelineHair(self) && FoxelineModule.Settings.BadelineDefaults.EnableBangs);
     }
 }

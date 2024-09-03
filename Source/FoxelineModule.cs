@@ -52,6 +52,7 @@ namespace Celeste.Mod.Foxeline
             On.Celeste.PlayerHair.GetHairTexture += FoxelineHooks.Hair_GetTexture;
             On.Celeste.PlayerHair.MoveHairBy += FoxelineHooks.PlayerHair_MoveHairBy;
         }
+        
 
         public override void LoadContent(bool inGame)
         {

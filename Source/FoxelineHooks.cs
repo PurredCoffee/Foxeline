@@ -21,7 +21,7 @@ namespace Celeste.Mod.Foxeline
 
             //only handle tail if:
             //- the entity is a tail owner
-            if (!FoxelineHelpers.correctTailOwner(self) || FoxelineHelpers.getTailVariant(selfData, self) == TailVariant.None)
+            if (!FoxelineHelpers.correctTailOwner(self) || FoxelineHelpers.getTailVariant(self) == TailVariant.None)
             {
                 return;
             }
@@ -59,7 +59,7 @@ namespace Celeste.Mod.Foxeline
             tailPositions[0] = self.Nodes[0] + tailOffsets[0];
 
             //cache dynamic data for performance
-            float tailScale = FoxelineHelpers.getTailScale(selfData, self);
+            float tailScale = FoxelineHelpers.getTailScale(self);
 
             for (int i = 1; i < FoxelineConst.tailLen; i++)
             {
@@ -168,7 +168,7 @@ namespace Celeste.Mod.Foxeline
             //only handle tail if:
             //- it's enabled
             //- the entity is a tail owner
-            if (FoxelineHelpers.getTailVariant(selfData, self) == TailVariant.None || !FoxelineHelpers.correctTailOwner(self))
+            if (FoxelineHelpers.getTailVariant(self) == TailVariant.None || !FoxelineHelpers.correctTailOwner(self))
             {
                 orig(self);
                 return;
@@ -178,7 +178,7 @@ namespace Celeste.Mod.Foxeline
             if (self.Sprite.CurrentAnimationID == "starFly")
             {
                 //Dont draw the tail if disabled
-                if (!FoxelineHelpers.getFeatherTail(selfData, self))
+                if (!FoxelineHelpers.getFeatherTail(self))
                 {
                     orig(self);
                     return;
