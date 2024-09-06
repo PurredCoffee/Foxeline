@@ -25,6 +25,8 @@ namespace Celeste.Mod.Foxeline
 
         [SettingSubText("(VANILLA/SMH PLUS ONLY)")]
         public bool FixCutscenes { get; set; } = true;
+        [SettingSubText("Disables skinmod tails defined by FoxelineConfig.yaml")]
+        public bool DisableSkinmodTails { get; set; } = false;
 
         [SettingSubText("Badeline's tail configuration")]
         public BadelineTailDefaults BadelineTail { get; set; } = new BadelineTailDefaults();

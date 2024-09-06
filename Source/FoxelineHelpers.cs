@@ -9,6 +9,8 @@ using Celeste.Mod.CelesteNet.Client;
 using Celeste.Mod.CelesteNet.Client.Entities;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using Celeste.Mod.Foxeline.SkinIntegration;
+using static Celeste.Mod.Foxeline.SkinIntegration.FoxelineYaml;
 
 namespace Celeste.Mod.Foxeline
 {
@@ -40,6 +42,43 @@ namespace Celeste.Mod.Foxeline
 
     public static class FoxelineHelpers
     {
+
+#nullable enable
+        /// <summary>
+        /// Gets the current active skin from SMH+
+        /// </summary>
+        /// <returns>String representing the skin name, null if not found</returns>
+        public static string? TryGetActiveSkinName()
+        {
+            if (Everest.Loader.TryGetDependency(new EverestModuleMetadata() { Name = "SkinModHelperPlus", Version = new Version(0, 9, 5) }, out var mod))
+            {
+                EverestModuleSettings SkinModHelper_Settings = mod._Settings;
+                if (SkinModHelper_Settings != null)
+                {
+                    return DynamicData.For(SkinModHelper_Settings).Get<string>("SelectedPlayerSkin");
+                }
+            }
+            return null;
+        }
+#nullable disable
+
+        /// <summary>
+        /// Gets the tail config of the current active skin
+        /// </summary>
+        /// <returns>FoxelineConfig of the active skin, null if not found or skinmod tails are disabled</returns>
+        public static FoxelineConfig TryGetActiveSkinTailConfig()
+        {
+            if (FoxelineModule.Settings.DisableSkinmodTails) {
+                return null;
+            }
+
+            if (SkinTailConfigs.TryGetValue(TryGetActiveSkinName(), out FoxelineConfig config))
+            {
+                return config;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Gets the tail variant for the player based on the settings
         /// </summary>
@@ -50,7 +89,8 @@ namespace Celeste.Mod.Foxeline
         {
             if(isPlayerHair(self))
             {
-                return FoxelineModule.Settings.Tail;
+                var config = TryGetActiveSkinTailConfig();
+                return config == null ? FoxelineModule.Settings.Tail : config.TailEnum;
             }
             if(isBadelineHair(self))
             {
@@ -71,7 +111,9 @@ namespace Celeste.Mod.Foxeline
         {
             if(isPlayerHair(self))
             {
-                return FoxelineModule.Settings.TailScale / 100f;
+                var config = TryGetActiveSkinTailConfig();
+                return config == null ? FoxelineModule.Settings.TailScale / 100f : config.TailScale / 100f;
+
             }
             if(isBadelineHair(self))
             {
@@ -92,7 +134,8 @@ namespace Celeste.Mod.Foxeline
         {
             if(isPlayerHair(self))
             {
-                return FoxelineModule.Settings.PaintBrushTail;
+                var config = TryGetActiveSkinTailConfig();
+                return config == null ? FoxelineModule.Settings.PaintBrushTail : config.PaintBrushTail;
             }
             if(isBadelineHair(self))
             {
@@ -113,7 +156,8 @@ namespace Celeste.Mod.Foxeline
         {
             if(isPlayerHair(self))
             {
-                return FoxelineModule.Settings.TailBrushTint / 100f;
+                var config = TryGetActiveSkinTailConfig();
+                return config == null ? FoxelineModule.Settings.TailBrushTint / 100f : config.TailBrushTint / 100f;
             }
             if(isBadelineHair(self))
             {
@@ -134,7 +178,8 @@ namespace Celeste.Mod.Foxeline
         {
             if(isPlayerHair(self))
             {
-                return FoxelineModule.Settings.FeatherTail;
+                var config = TryGetActiveSkinTailConfig();
+                return config == null ? FoxelineModule.Settings.FeatherTail : config.FeatherTail;
             }
             if(isBadelineHair(self))
             {
