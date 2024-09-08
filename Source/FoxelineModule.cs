@@ -51,8 +51,8 @@ namespace Celeste.Mod.Foxeline
             On.Celeste.PlayerHair.AfterUpdate += FoxelineHooks.PlayerHair_AfterUpdate;
             On.Celeste.PlayerHair.GetHairTexture += FoxelineHooks.Hair_GetTexture;
             On.Celeste.PlayerHair.MoveHairBy += FoxelineHooks.PlayerHair_MoveHairBy;
+            On.Celeste.GameLoader.Begin += FoxelineHooks.GameLoader_Begin; 
         }
-        
 
         public override void LoadContent(bool inGame)
         {
@@ -73,6 +73,7 @@ namespace Celeste.Mod.Foxeline
             On.Celeste.PlayerHair.AfterUpdate -= FoxelineHooks.PlayerHair_AfterUpdate;
             On.Celeste.PlayerHair.GetHairTexture -= FoxelineHooks.Hair_GetTexture;
             On.Celeste.PlayerHair.MoveHairBy -= FoxelineHooks.PlayerHair_MoveHairBy;
+            On.Celeste.GameLoader.Begin -= FoxelineHooks.GameLoader_Begin;
         }
     }
 }

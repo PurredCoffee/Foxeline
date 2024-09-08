@@ -21,23 +21,45 @@ public class TailData : DataType<TailData> {
 
     public TailData() {}
     public TailData(DataPlayerInfo player) {
-        Player = player;
-        TailInformation = new FoxelineModuleSettings.TailDefaults() {
-            Tail = FoxelineModule.Settings.Tail,
-            TailBrushTint = FoxelineModule.Settings.TailBrushTint,
-            TailScale = FoxelineModule.Settings.TailScale,
-            FeatherTail = FoxelineModule.Settings.FeatherTail,
-            PaintBrushTail = FoxelineModule.Settings.PaintBrushTail
-        };
+        var config = FoxelineHelpers.TryGetActiveSkinTailConfig();
+
+        if (config != null) {
+            TailInformation = new FoxelineModuleSettings.TailDefaults() {
+                Tail = config.TailEnum,
+                TailBrushTint = config.TailBrushTint,
+                TailScale = config.TailScale,
+                FeatherTail = config.FeatherTail,
+                PaintBrushTail = config.PaintBrushTail
+            };
+        }
+        else {
+            TailInformation = new FoxelineModuleSettings.TailDefaults() {
+                Tail = FoxelineModule.Settings.Tail,
+                TailBrushTint = FoxelineModule.Settings.TailBrushTint,
+                TailScale = FoxelineModule.Settings.TailScale,
+                FeatherTail = FoxelineModule.Settings.FeatherTail,
+                PaintBrushTail = FoxelineModule.Settings.PaintBrushTail
+            };
+        }
     }
 
     public override bool FilterHandle(DataContext ctx)
         => Player != null;
 
-    public override MetaType[] GenerateMeta(DataContext ctx) => [
-        new MetaPlayerPrivateState(Player),
-        new MetaBoundRef(DataType<DataPlayerInfo>.DataID, Player?.ID ?? uint.MaxValue, true),
-    ];
+
+    // I don't have collection literals, I'm very sorry.
+    //public override MetaType[] GenerateMeta(DataContext ctx) => [
+    //    new MetaPlayerPrivateState(Player),
+    //    new MetaBoundRef(DataType<DataPlayerInfo>.DataID, Player?.ID ?? uint.MaxValue, true),
+    //];
+
+    public override MetaType[] GenerateMeta(DataContext ctx) {
+        return new MetaType[] {
+            new MetaPlayerPrivateState(Player),
+            new MetaBoundRef(DataType<DataPlayerInfo>.DataID, Player?.ID ?? uint.MaxValue, true),
+        };
+    }
+
 
     public override void FixupMeta(DataContext ctx) {
         Player = Get<MetaPlayerPrivateState>(ctx);

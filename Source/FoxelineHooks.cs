@@ -191,9 +191,9 @@ namespace Celeste.Mod.Foxeline
         public static void PlayerHair_ctor(On.Celeste.PlayerHair.orig_ctor orig, PlayerHair self, PlayerSprite sprite)
         {
             DynamicData selfData = DynamicData.For(self);
-            List<Vector2> tailPositions = [];
-            List<Vector2> tailOffsets = [];
-            List<Vector2> tailVelocities = [];
+            List<Vector2> tailPositions = new();
+            List<Vector2> tailOffsets = new();
+            List<Vector2> tailVelocities = new();
             selfData.Set(FoxelineConst.TailPositions, tailPositions);
             selfData.Set(FoxelineConst.Velocity, tailOffsets);
             selfData.Set(FoxelineConst.TailOffset, tailVelocities);
@@ -245,6 +245,11 @@ namespace Celeste.Mod.Foxeline
             return FoxelineModule.Instance.bangs[self.Sprite.HairFrame];
         }
 
+        public static void GameLoader_Begin(On.Celeste.GameLoader.orig_Begin orig, GameLoader self)
+        {
+            Foxeline.SkinIntegration.FoxelineYaml.ReloadYaml();
+            orig(self);
+        }
 
     }
 }
