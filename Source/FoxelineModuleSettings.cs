@@ -13,7 +13,7 @@ namespace Celeste.Mod.Foxeline
         [SettingRange(0, 100, true)]
         public int TailBrushTint { get; set; } = 15;
 
-        [SettingRange(25, 175, true)]
+        [SettingRange(25, 1000, true)]
         public int TailScale { get; set; } = 100;
         public bool FeatherTail { get; set; } = true;
         public bool PaintBrushTail { get; set; } = false;
@@ -41,7 +41,8 @@ namespace Celeste.Mod.Foxeline
             public TailVariant Tail { get; set; } = TailVariant.None;
             [SettingRange(0, 100, true)]
             public int TailBrushTint { get; set; } = 15;
-            [SettingRange(25, 175, true)]
+            // limited to 255 because it's cast to byte when sent in cnet
+            [SettingRange(25, 255, true)]
             public int TailScale { get; set; } = 100;
             public bool FeatherTail { get; set; } = true;
             public bool PaintBrushTail { get; set; } = false;
