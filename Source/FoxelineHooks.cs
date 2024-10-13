@@ -9,7 +9,6 @@ namespace Celeste.Mod.Foxeline
 {
     public static class FoxelineHooks
     {
-        public static FoxelineModuleSettings.TailDefaults oldSettings;
         public static void PlayerHair_AfterUpdate(On.Celeste.PlayerHair.orig_AfterUpdate orig, PlayerHair self)
         {
             orig(self);
