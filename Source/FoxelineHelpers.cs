@@ -244,7 +244,7 @@ namespace Celeste.Mod.Foxeline
                 : FoxelineConst.noBackpackCutscenes;
 
             //if there's no animation id in the lookup, just do the default
-            if (!CutsceneToDashLookup.TryGetValue(self.Sprite.CurrentAnimationID, out var dashes))
+            if (!CutsceneToDashLookup.TryGetValue(self.Sprite.LastAnimationID, out var dashes))
                 return self.GetHairColor(hairNodeIndex);
 
 
@@ -282,7 +282,7 @@ namespace Celeste.Mod.Foxeline
         public static bool isCrouched(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "duck" or "slide"
+                Sprite.LastAnimationID: "duck" or "slide"
             };
 
         /// <summary>
@@ -293,7 +293,7 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldDroopTail(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "spin" or "launch"
+                Sprite.LastAnimationID: "spin" or "launch"
             }
             || (hair.Entity is Player && hair.Sprite.EntityAs<Player>().Stamina <= Player.ClimbTiredThreshold);
 
@@ -305,7 +305,7 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldFlipTail(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "wakeUp" or "sleep" or "sitDown" or "bagDown" or "asleep" or "halfWakeUp"
+                Sprite.LastAnimationID: "wakeUp" or "sleep" or "sitDown" or "bagDown" or "asleep" or "halfWakeUp"
             };
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldStretchTail(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "edge" or "idleC"
+                Sprite.LastAnimationID: "edge" or "idleC"
             }
             || isCrouched(hair);
 

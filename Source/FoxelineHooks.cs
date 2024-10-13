@@ -45,7 +45,7 @@ namespace Celeste.Mod.Foxeline
 
             //the position the tail will grow out of
             //if in animation, use custom tail center
-            if (!FoxelineConst.customTailPositions.TryGetValue(self.Sprite.CurrentAnimationID, out Vector2 offset))
+            if (!FoxelineConst.customTailPositions.TryGetValue(self.Sprite.LastAnimationID, out Vector2 offset))
             {
                 offset = new(droopTail ? 0 : -2, crouched ? 3 : 6);
                 offset.X += MathF.Sin(Engine.FrameCounter / 30f) / 2f;
@@ -125,7 +125,7 @@ namespace Celeste.Mod.Foxeline
                     //makes it look more natural
 
                     //note: fallPose's frame 0 lasts for 6 frames, so this'll be run for 6 frames
-                    if (self.Sprite is { CurrentAnimationID: "fallPose", CurrentAnimationFrame: 0 })
+                    if (self.Sprite is { LastAnimationID: "fallPose", CurrentAnimationFrame: 0 })
                     {
                         //i just made up some formula with some trial and error and it looks good..? i guess?
                         //- Snip
@@ -133,7 +133,7 @@ namespace Celeste.Mod.Foxeline
                     }
 
                     //while flying, keep tail as trail
-                    if (self.Sprite.CurrentAnimationID == "starFly")
+                    if (self.Sprite.LastAnimationID == "starFly")
                         tailVelocities[i] = Vector2.Zero;
 
                     //the tail then updates its positon based on how much it was accelerated
@@ -164,7 +164,7 @@ namespace Celeste.Mod.Foxeline
             }
 
             //special case for star fly
-            if (self.Sprite.CurrentAnimationID == "starFly")
+            if (self.Sprite.LastAnimationID == "starFly")
             {
                 //Dont draw the tail if disabled
                 if (!FoxelineHelpers.getFeatherTail(self))
