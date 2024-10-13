@@ -233,10 +233,10 @@ namespace Celeste.Mod.Foxeline
         /// <returns>The smarter hair color of the player</returns>
         public static Color getHairColor(int hairNodeIndex, PlayerHair self, DynamicData selfData)
         {
-            //only handle tail if:
-            //- it's enabled
+            //only do this if:
+            //- we're fixing cutscenes
             //- the entity is a Player
-            if (getTailVariant(self) == TailVariant.None || self.Entity is not Player)
+            if (!FoxelineModule.Settings.FixCutscenes || self.Entity is not Player)
                 return self.GetHairColor(hairNodeIndex);
 
             Dictionary<string, int> CutsceneToDashLookup = self.Sprite.EntityAs<Player>().Inventory.Backpack
