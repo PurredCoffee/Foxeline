@@ -209,7 +209,7 @@ namespace Celeste.Mod.Foxeline
         {
             DynamicData selfData = DynamicData.For(self);
             List<Vector2> tailPositions = selfData.Get<List<Vector2>>(FoxelineConst.TailPositions);
-            Vector2 value = self.Entity.Position + new Vector2((0 - self.Facing) * 200, 200f);
+            Vector2 value = self.Entity.Position + new Vector2(-(int)self.Facing * 200, 200f);
             for (int i = 0; i < tailPositions.Count; i++)
             {
                 tailPositions[i] = value;
