@@ -28,8 +28,8 @@ namespace Celeste.Mod.Foxeline
             {"bigFall", new Vector2(7,-2)},
             {"bubble", new Vector2(0,-4)},
 
-            // modded animations
-            {"anim_player_elytra_fly", new Vector2(-6,2)} // CommunalHelper - elytra
+            //modded animations
+            {"anim_player_elytra_fly", new Vector2(-6,2)} //CommunalHelper - elytra
         };
         public static readonly Dictionary<string, int> backpackCutscenes = new Dictionary<string, int>() {
             {"asleep", 1},
@@ -62,7 +62,7 @@ namespace Celeste.Mod.Foxeline
             {"spin", 1},
             {"wakeUp", 1},
 
-            // extra no backpack animations
+            //extra no backpack animations
             {"downed", 1},
             {"roll", 1},
             {"rollGetUp", 1},
