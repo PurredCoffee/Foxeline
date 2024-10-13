@@ -317,6 +317,7 @@ namespace Celeste.Mod.Foxeline
             => hair is
             {
                 Sprite.LastAnimationID: "wakeUp" or "sleep" or "sitDown" or "bagDown" or "asleep" or "halfWakeUp"
+                or "roll" or "rollGetUp" or "downed"
             };
 
         /// <summary>
