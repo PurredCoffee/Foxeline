@@ -32,6 +32,7 @@ namespace Celeste.Mod.Foxeline
             bool crouched = FoxelineHelpers.isCrouched(self);
             bool droopTail = FoxelineHelpers.shouldDroopTail(self);
             bool flipTail = FoxelineHelpers.shouldFlipTail(self);
+            bool restTail = FoxelineHelpers.shouldRestTail(self);
             bool stretchTail = FoxelineHelpers.shouldStretchTail(self);
 
             //Vertical flip
@@ -91,11 +92,18 @@ namespace Celeste.Mod.Foxeline
                                         * (FoxelineModule.Settings.FoxelineConstants.droopSwayFrequency / 100f)
                                         / FoxelineConst.tailLen));
 
-                    //if we are in a cutscene where the tail looks cuter close to the player, modify the tail curve
+                    //are we in an animation which should turn the tail the other direction?
+                    //example: sleep
                     if (flipTail)
-                        tailDir *= new Vector2(-1, -0f);
+                        tailDir.X *= -1;
 
-                    //if we are balancing we want it to look like we use the tail for that
+                    //are we in an animation which should keep the tail on the ground?
+                    //example: sleep, roll
+                    if (restTail)
+                        tailDir.Y = 0;
+
+                    //are we in an animation which should keep the tail closer to the ground?
+                    //example: idleC (sneeze), edge
                     if (stretchTail)
                         tailDir *= new Vector2(2f, 0.5f);
 

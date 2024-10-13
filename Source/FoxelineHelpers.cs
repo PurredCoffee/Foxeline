@@ -309,6 +309,17 @@ namespace Celeste.Mod.Foxeline
             };
 
         /// <summary>
+        /// Determines whether the tail should be laying on the ground based on the current animation ID of the player's hair.
+        /// </summary>
+        /// <param name="hair">The player's hair.</param>
+        /// <returns><c>true</c> if the tail should be laying on the ground; otherwise, <c>false</c>.</returns>
+        public static bool shouldRestTail(PlayerHair hair)
+            => hair is
+            {
+                Sprite.LastAnimationID: "wakeUp" or "sleep" or "sitDown" or "bagDown" or "asleep" or "halfWakeUp"
+            };
+
+        /// <summary>
         /// Determines whether the tail of the player's hair should be stretched.
         /// </summary>
         /// <param name="hair">The player's hair.</param>
