@@ -26,7 +26,10 @@ namespace Celeste.Mod.Foxeline
             {"carryTheoWalk", new Vector2(2,6)},
             {"carryTheoCollapse", new Vector2(8,-2)},
             {"bigFall", new Vector2(7,-2)},
-            {"bubble", new Vector2(0,-4)}
+            {"bubble", new Vector2(0,-4)},
+
+            // modded animations
+            {"anim_player_elytra_fly", new Vector2(-6,2)} // CommunalHelper - elytra
         };
         public static readonly Dictionary<string, int> backpackCutscenes = new Dictionary<string, int>() {
             {"bubble", 1},
