@@ -32,38 +32,40 @@ namespace Celeste.Mod.Foxeline
             {"anim_player_elytra_fly", new Vector2(-6,2)} // CommunalHelper - elytra
         };
         public static readonly Dictionary<string, int> backpackCutscenes = new Dictionary<string, int>() {
+            {"asleep", 1},
+            {"bagDown", 1},
             {"bubble", 1},
-            {"spin", 1},
+            {"carryTheoCollapse", 1},
+            {"carryTheoWalk", 1},
+            {"fallPose", 1},
+            {"halfWakeUp", 1},
             {"launch", 2},
             {"launchRecover", 2},
-            {"wakeUp", 1},
-            {"sleep", 1},
             {"sitDown", 1},
-            {"fallPose", 1},
-            {"bagDown", 1},
-            {"asleep", 1},
-            {"halfWakeUp", 1},
-            {"bigFall", 1},
-            {"carryTheoWalk", 1},
-            {"carryTheoCollapse", 1}
+            {"sleep", 1},
+            {"spin", 1},
+            {"wakeUp", 1},
         };
         public static readonly Dictionary<string, int> noBackpackCutscenes = new Dictionary<string, int>()
         {
+            {"asleep", 1},
+            {"bagDown", 1},
             {"bubble", 2},
-            {"spin", 1},
+            {"carryTheoCollapse", 1},
+            {"carryTheoWalk", 1},
+            {"fallPose", 1},
+            {"halfWakeUp", 1},
             {"launch", 2},
             {"launchRecover", 2},
-            {"wakeUp", 1},
-            {"roll", 1},
-            {"sleep", 1},
             {"sitDown", 1},
-            {"fallPose", 1},
-            {"bagDown", 1},
-            {"asleep", 1},
-            {"halfWakeUp", 1},
-            {"bigFall", 1},
-            {"carryTheoWalk", 1},
-            {"carryTheoCollapse", 1}
+            {"sleep", 1},
+            {"spin", 1},
+            {"wakeUp", 1},
+
+            // extra no backpack animations
+            {"downed", 1},
+            {"roll", 1},
+            {"rollGetUp", 1},
         };
         public static readonly float[] tailSize = { 3, 2, 1, 3, 1, 2, 2, 2 };
         public static readonly int[] tailID = { 0, 2, 3, 4, 4, 3, 1, 0 };
