@@ -68,7 +68,7 @@ public class TailData : DataType<TailData>
             if (!HasReceivedUnrecognizedPacket)
             {
                 HasReceivedUnrecognizedPacket = true;
-                Logger.Warn("Foxeline",
+                Logger.Log(LogLevel.Warn, "Foxeline",
                     $"Received packet with a higher version than expected ({PacketVersion} > {LatestPacketVersion})." +
                     $"Using defaults instead - please update Foxeline.");
             }
