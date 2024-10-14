@@ -125,6 +125,27 @@ namespace Celeste.Mod.Foxeline
             return FoxelineModule.Settings.CelestenetDefaults.TailBrushTint / 100f;
         }
         /// <summary>
+        /// Gets the tail brush color for the player based on the settings
+        /// </summary>
+        /// <param name="selfData">selfData Object for the PlayerHair</param>
+        /// <param name="self">PlayerHair object</param>
+        /// <returns>Color for the tip of the tail</returns>
+        public static Color getTailBrushColor(PlayerHair self)
+        {
+            if(isPlayerHair(self))
+            {
+                return FoxelineModule.Settings.TailBrushColor;
+            }
+            if(isBadelineHair(self))
+            {
+                return FoxelineModule.Settings.BadelineTail.TailBrushColor;
+            }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.TailBrushColor;
+            }
+            return FoxelineModule.Settings.CelestenetDefaults.TailBrushColor;
+        }
+        /// <summary>
         /// Gets the feather tail flag for the player based on the settings
         /// </summary>
         /// <param name="selfData">selfData Object for the PlayerHair</param>
@@ -188,7 +209,7 @@ namespace Celeste.Mod.Foxeline
                 Color color = fill
                     ? fullColor
                     : Color.Lerp(
-                        FoxelineModule.Settings.TailBrushColor,
+                        getTailBrushColor(self),
                         fullColor,
                         getTailBrushTint(self));
                 Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();

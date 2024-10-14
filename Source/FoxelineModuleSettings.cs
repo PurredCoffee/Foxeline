@@ -24,7 +24,7 @@ namespace Celeste.Mod.Foxeline
         public Color TailBrushColor { get; set; } = Color.White;
 
         [YamlIgnore]
-        public string TailBrushColorString => $"#{TailBrushColor.R:X2}{TailBrushColor.G:X2}{TailBrushColor.B:X2}";
+        public string TailBrushColorString => $"{TailBrushColor.R:X2}{TailBrushColor.G:X2}{TailBrushColor.B:X2}";
 
         [SettingRange(25, 1000, true)]
         public int TailScale { get; set; } = 100;
@@ -74,7 +74,7 @@ namespace Celeste.Mod.Foxeline
         public void CreateTailBrushColorEntry(TextMenu menu, bool inGame)
         {
             menu.Add(TailBrushColorEntry
-                = new TextMenu.Button($"{nameof(TailBrushColor).SpacedPascalCase()}: {TailBrushColorString}"));
+                = new TextMenu.Button($"{nameof(TailBrushColor).SpacedPascalCase()}: #{TailBrushColorString}"));
 
             TailBrushColorEntry.Disabled = inGame;
 
@@ -90,12 +90,17 @@ namespace Celeste.Mod.Foxeline
                 TailBrushColorEntry.OnEnter();
             }
 
-            //reset invalid flag on exit
-            menu.OnCancel += () => WasTailBrushColorInvalid = false;
+            //reset invalid flags on exit
+            menu.OnCancel += () =>
+            {
+                BadelineTail.WasTailBrushColorInvalid = false;
+                CelestenetDefaults.WasTailBrushColorInvalid = false;
+                WasTailBrushColorInvalid = false;
+            };
 
             TailBrushColorEntry.Pressed(() =>
             {
-                string buffer = TailBrushColorString[1..];
+                string buffer = TailBrushColorString;
                 Audio.Play(SFX.ui_main_savefile_rename_start);
                 menu.SceneAs<Overworld>().Goto<OuiModOptionString>().Init<OuiModOptions>(
                     buffer,
@@ -140,6 +145,11 @@ namespace Celeste.Mod.Foxeline
             [SettingRange(0, 100, true)]
             public int TailBrushTint { get; set; } = 15;
 
+            public Color TailBrushColor { get; set; } = Color.White;
+
+            [YamlIgnore]
+            public string TailBrushColorString => $"{TailBrushColor.R:X2}{TailBrushColor.G:X2}{TailBrushColor.B:X2}";
+
             //limited to 255 because it's cast to byte when sent in cnet
             [SettingRange(25, 255, true)]
             public int TailScale { get; set; } = 100;
@@ -147,6 +157,46 @@ namespace Celeste.Mod.Foxeline
             public bool FeatherTail { get; set; } = true;
 
             public bool PaintBrushTail { get; set; } = false;
+
+            //submenu item creation methods
+
+            internal bool WasTailBrushColorInvalid;
+            private TextMenu.Button TailBrushColorEntry = default!;
+            public void CreateTailBrushColorEntry(TextMenuExt.SubMenu menu, bool inGame)
+            {
+                menu.Add(TailBrushColorEntry
+                    = new TextMenu.Button($"{nameof(TailBrushColor).SpacedPascalCase()}: #{TailBrushColorString}"));
+
+                TailBrushColorEntry.Disabled = inGame;
+
+                //can't use text inputs in-game; just exit
+                if (inGame)
+                    return;
+
+                //grrr this NREs
+                //if (WasTailBrushColorInvalid)
+                //    TailBrushColorEntry.AddDescription(menu, "The color you entered is invalid. Try again.");
+
+                TailBrushColorEntry.Pressed(() =>
+                {
+                    string buffer = TailBrushColorString;
+                    Audio.Play(SFX.ui_main_savefile_rename_start);
+                    menu.Container.SceneAs<Overworld>().Goto<OuiModOptionString>().Init<OuiModOptions>(
+                        buffer,
+                        newValue => buffer = newValue,
+                        isConfirm =>
+                        {
+                            if (!isConfirm)
+                                return;
+
+                            WasTailBrushColorInvalid = !int.TryParse(buffer, NumberStyles.HexNumber, null, out _);
+                            if (!WasTailBrushColorInvalid)
+                                TailBrushColor = Calc.HexToColor(buffer);
+                        },
+                        minValueLength: 6, maxValueLength: 6
+                    );
+                });
+            }
         }
 
         [SettingSubMenu]

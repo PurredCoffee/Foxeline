@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Celeste.Mod.CelesteNet;
 using Celeste.Mod.CelesteNet.DataTypes;
 
@@ -30,11 +31,13 @@ public class TailData : DataType<TailData>
     public FoxelineModuleSettings.TailDefaults TailInformation;
 
     public TailData() {}
+
     public TailData(DataPlayerInfo player) {
         Player = player;
         TailInformation = new FoxelineModuleSettings.TailDefaults {
             Tail = FoxelineModule.Settings.Tail,
             TailBrushTint = FoxelineModule.Settings.TailBrushTint,
+            TailBrushColor = FoxelineModule.Settings.TailBrushColor,
             TailScale = FoxelineModule.Settings.TailScale,
             FeatherTail = FoxelineModule.Settings.FeatherTail,
             PaintBrushTail = FoxelineModule.Settings.PaintBrushTail,
@@ -91,6 +94,7 @@ public class TailData : DataType<TailData>
         => TailInformation = new FoxelineModuleSettings.TailDefaults {
             Tail = (TailVariant)reader.ReadByte(),
             TailBrushTint = reader.ReadByte(),
+            TailBrushColor = reader.ReadColorNoA(),
             TailScale = reader.ReadByte(),
             FeatherTail = reader.ReadBoolean(),
             PaintBrushTail = reader.ReadBoolean()
@@ -102,6 +106,7 @@ public class TailData : DataType<TailData>
         writer.Write(LatestPacketVersion);
         writer.Write((byte)TailInformation.Tail);
         writer.Write((byte)TailInformation.TailBrushTint);
+        writer.WriteNoA(TailInformation.TailBrushColor);
         writer.Write((byte)TailInformation.TailScale);
         writer.Write(TailInformation.FeatherTail);
         writer.Write(TailInformation.PaintBrushTail);
