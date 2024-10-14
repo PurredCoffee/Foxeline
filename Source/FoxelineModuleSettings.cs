@@ -226,6 +226,9 @@ namespace Celeste.Mod.Foxeline
 
             [SettingRange(0, 100, true)]
             public int Softness { get; set; } = 30;
+
+            [SettingRange(25, 1000, true)]
+            public int ClampCelesteNetTailSize { get; set; } = 175;
         }
     }
 }

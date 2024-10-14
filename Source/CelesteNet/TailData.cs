@@ -95,7 +95,7 @@ public class TailData : DataType<TailData>
             Tail = (TailVariant)reader.ReadByte(),
             TailBrushTint = reader.ReadByte(),
             TailBrushColor = reader.ReadColorNoA(),
-            TailScale = reader.ReadByte(),
+            TailScale = Math.Min(reader.ReadUInt16(), FoxelineModule.Settings.FoxelineConstants.ClampCelesteNetTailSize),
             FeatherTail = reader.ReadBoolean(),
             PaintBrushTail = reader.ReadBoolean()
         };
@@ -107,7 +107,7 @@ public class TailData : DataType<TailData>
         writer.Write((byte)TailInformation.Tail);
         writer.Write((byte)TailInformation.TailBrushTint);
         writer.WriteNoA(TailInformation.TailBrushColor);
-        writer.Write((byte)TailInformation.TailScale);
+        writer.Write((ushort)TailInformation.TailScale);
         writer.Write(TailInformation.FeatherTail);
         writer.Write(TailInformation.PaintBrushTail);
     }
