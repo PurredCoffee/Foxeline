@@ -150,8 +150,7 @@ namespace Celeste.Mod.Foxeline
             [YamlIgnore]
             public string TailBrushColorString => $"{TailBrushColor.R:X2}{TailBrushColor.G:X2}{TailBrushColor.B:X2}";
 
-            //limited to 255 because it's cast to byte when sent in cnet
-            [SettingRange(25, 255, true)]
+            [SettingRange(25, 1000, true)]
             public int TailScale { get; set; } = 100;
 
             public bool FeatherTail { get; set; } = true;
