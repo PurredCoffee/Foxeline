@@ -22,45 +22,52 @@ namespace Celeste.Mod.Foxeline
         public const string smh_hairConfig = "smh_hairConfig";
 
         public static readonly Dictionary<string, Vector2> customTailPositions = new Dictionary<string, Vector2>(){
-            {"starFly", new Vector2(0,0)},
-            {"carryTheoWalk", new Vector2(2,6)},
-            {"carryTheoCollapse", new Vector2(8,-2)},
             {"bigFall", new Vector2(7,-2)},
-            {"bubble", new Vector2(0,-4)}
+            {"bubble", new Vector2(0,-4)},
+            {"carryTheoCollapse", new Vector2(8,-2)},
+            {"carryTheoWalk", new Vector2(2,6)},
+            {"edgeBack", new Vector2(0,6)},
+            {"runWind", new Vector2(-8, 4)},
+            {"starFly", new Vector2(0,0)},
+
+            //modded animations
+            {"anim_player_elytra_fly", new Vector2(-6,2)} //CommunalHelper - elytra
         };
         public static readonly Dictionary<string, int> backpackCutscenes = new Dictionary<string, int>() {
+            {"asleep", 1},
+            {"bagDown", 1},
             {"bubble", 1},
-            {"spin", 1},
+            {"carryTheoCollapse", 1},
+            {"carryTheoWalk", 1},
+            {"fallPose", 1},
+            {"halfWakeUp", 1},
             {"launch", 2},
             {"launchRecover", 2},
-            {"wakeUp", 1},
-            {"sleep", 1},
             {"sitDown", 1},
-            {"fallPose", 1},
-            {"bagDown", 1},
-            {"asleep", 1},
-            {"halfWakeUp", 1},
-            {"bigFall", 1},
-            {"carryTheoWalk", 1},
-            {"carryTheoCollapse", 1}
+            {"sleep", 1},
+            {"spin", 1},
+            {"wakeUp", 1},
         };
         public static readonly Dictionary<string, int> noBackpackCutscenes = new Dictionary<string, int>()
         {
+            {"asleep", 1},
+            {"bagDown", 1},
             {"bubble", 2},
-            {"spin", 1},
+            {"carryTheoCollapse", 1},
+            {"carryTheoWalk", 1},
+            {"fallPose", 1},
+            {"halfWakeUp", 1},
             {"launch", 2},
             {"launchRecover", 2},
-            {"wakeUp", 1},
-            {"roll", 1},
-            {"sleep", 1},
             {"sitDown", 1},
-            {"fallPose", 1},
-            {"bagDown", 1},
-            {"asleep", 1},
-            {"halfWakeUp", 1},
-            {"bigFall", 1},
-            {"carryTheoWalk", 1},
-            {"carryTheoCollapse", 1}
+            {"sleep", 1},
+            {"spin", 1},
+            {"wakeUp", 1},
+
+            //extra no backpack animations
+            {"downed", 1},
+            {"roll", 1},
+            {"rollGetUp", 1},
         };
         public static readonly float[] tailSize = { 3, 2, 1, 3, 1, 2, 2, 2 };
         public static readonly int[] tailID = { 0, 2, 3, 4, 4, 3, 1, 0 };

@@ -9,7 +9,6 @@ namespace Celeste.Mod.Foxeline
 {
     public static class FoxelineHooks
     {
-        public static FoxelineModuleSettings.TailDefaults oldSettings;
         public static void PlayerHair_AfterUpdate(On.Celeste.PlayerHair.orig_AfterUpdate orig, PlayerHair self)
         {
             orig(self);
@@ -32,6 +31,7 @@ namespace Celeste.Mod.Foxeline
             bool crouched = FoxelineHelpers.isCrouched(self);
             bool droopTail = FoxelineHelpers.shouldDroopTail(self);
             bool flipTail = FoxelineHelpers.shouldFlipTail(self);
+            bool restTail = FoxelineHelpers.shouldRestTail(self);
             bool stretchTail = FoxelineHelpers.shouldStretchTail(self);
 
             //Vertical flip
@@ -45,7 +45,7 @@ namespace Celeste.Mod.Foxeline
 
             //the position the tail will grow out of
             //if in animation, use custom tail center
-            if (!FoxelineConst.customTailPositions.TryGetValue(self.Sprite.CurrentAnimationID, out Vector2 offset))
+            if (!FoxelineConst.customTailPositions.TryGetValue(self.Sprite.LastAnimationID, out Vector2 offset))
             {
                 offset = new(droopTail ? 0 : -2, crouched ? 3 : 6);
                 offset.X += MathF.Sin(Engine.FrameCounter / 30f) / 2f;
@@ -91,11 +91,18 @@ namespace Celeste.Mod.Foxeline
                                         * (FoxelineModule.Settings.FoxelineConstants.droopSwayFrequency / 100f)
                                         / FoxelineConst.tailLen));
 
-                    //if we are in a cutscene where the tail looks cuter close to the player, modify the tail curve
+                    //are we in an animation which should turn the tail the other direction?
+                    //example: sleep
                     if (flipTail)
-                        tailDir *= new Vector2(-1, -0f);
+                        tailDir.X *= -1;
 
-                    //if we are balancing we want it to look like we use the tail for that
+                    //are we in an animation which should keep the tail on the ground?
+                    //example: sleep, roll
+                    if (restTail)
+                        tailDir.Y = 0;
+
+                    //are we in an animation which should keep the tail closer to the ground?
+                    //example: idleC (sneeze), edge
                     if (stretchTail)
                         tailDir *= new Vector2(2f, 0.5f);
 
@@ -125,7 +132,7 @@ namespace Celeste.Mod.Foxeline
                     //makes it look more natural
 
                     //note: fallPose's frame 0 lasts for 6 frames, so this'll be run for 6 frames
-                    if (self.Sprite is { CurrentAnimationID: "fallPose", CurrentAnimationFrame: 0 })
+                    if (self.Sprite is { LastAnimationID: "fallPose", CurrentAnimationFrame: 0 })
                     {
                         //i just made up some formula with some trial and error and it looks good..? i guess?
                         //- Snip
@@ -133,7 +140,7 @@ namespace Celeste.Mod.Foxeline
                     }
 
                     //while flying, keep tail as trail
-                    if (self.Sprite.CurrentAnimationID == "starFly")
+                    if (self.Sprite.LastAnimationID == "starFly")
                         tailVelocities[i] = Vector2.Zero;
 
                     //the tail then updates its positon based on how much it was accelerated
@@ -164,7 +171,7 @@ namespace Celeste.Mod.Foxeline
             }
 
             //special case for star fly
-            if (self.Sprite.CurrentAnimationID == "starFly")
+            if (self.Sprite.LastAnimationID == "starFly")
             {
                 //Dont draw the tail if disabled
                 if (!FoxelineHelpers.getFeatherTail(self))
@@ -209,7 +216,7 @@ namespace Celeste.Mod.Foxeline
         {
             DynamicData selfData = DynamicData.For(self);
             List<Vector2> tailPositions = selfData.Get<List<Vector2>>(FoxelineConst.TailPositions);
-            Vector2 value = self.Entity.Position + new Vector2((0 - self.Facing) * 200, 200f);
+            Vector2 value = self.Entity.Position + new Vector2(-(int)self.Facing * 200, 200f);
             for (int i = 0; i < tailPositions.Count; i++)
             {
                 tailPositions[i] = value;

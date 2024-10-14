@@ -28,7 +28,7 @@ namespace Celeste.Mod.Foxeline
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static bool _TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail) {
             if(hair.Entity is Ghost ghost) {
-                if(TailComponent.TailInformation.TryGetValue(ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults? tailInfo)) {
+                if(CelesteNet.TailComponent.TailInformation.TryGetValue(ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults? tailInfo)) {
                     tail = tailInfo;
                     return true;
                 }
@@ -125,6 +125,27 @@ namespace Celeste.Mod.Foxeline
             return FoxelineModule.Settings.CelestenetDefaults.TailBrushTint / 100f;
         }
         /// <summary>
+        /// Gets the tail brush color for the player based on the settings
+        /// </summary>
+        /// <param name="selfData">selfData Object for the PlayerHair</param>
+        /// <param name="self">PlayerHair object</param>
+        /// <returns>Color for the tip of the tail</returns>
+        public static Color getTailBrushColor(PlayerHair self)
+        {
+            if(isPlayerHair(self))
+            {
+                return FoxelineModule.Settings.TailBrushColor;
+            }
+            if(isBadelineHair(self))
+            {
+                return FoxelineModule.Settings.BadelineTail.TailBrushColor;
+            }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.TailBrushColor;
+            }
+            return FoxelineModule.Settings.CelestenetDefaults.TailBrushColor;
+        }
+        /// <summary>
         /// Gets the feather tail flag for the player based on the settings
         /// </summary>
         /// <param name="selfData">selfData Object for the PlayerHair</param>
@@ -180,7 +201,7 @@ namespace Celeste.Mod.Foxeline
             {
                 MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
                 bool fill = (i < FoxelineConst.tailLen * (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f) != getPaintBrushTail(self);
-                //fill color is either the hair color or a blend of white and the hair color at the tip of the tail and the base of the tail (sometimes visible)
+                //fill color is either the hair color or a blend of the hair color at the tip of the tail and the base of the tail (sometimes visible)
                 float lerp = Math.Min((float)i / FoxelineConst.tailLen, 1) * self.Sprite.HairCount;
                 int hairNodeIndex = (int)lerp;
                 int nextHairNodeIndex = Math.Min(hairNodeIndex + 1, self.Sprite.HairCount - 1);
@@ -188,7 +209,7 @@ namespace Celeste.Mod.Foxeline
                 Color color = fill
                     ? fullColor
                     : Color.Lerp(
-                        Color.White,
+                        getTailBrushColor(self),
                         fullColor,
                         getTailBrushTint(self));
                 Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();
@@ -233,10 +254,10 @@ namespace Celeste.Mod.Foxeline
         /// <returns>The smarter hair color of the player</returns>
         public static Color getHairColor(int hairNodeIndex, PlayerHair self, DynamicData selfData)
         {
-            //only handle tail if:
-            //- it's enabled
+            //only do this if:
+            //- we're fixing cutscenes
             //- the entity is a Player
-            if (getTailVariant(self) == TailVariant.None || self.Entity is not Player)
+            if (!FoxelineModule.Settings.FixCutscenes || self.Entity is not Player player)
                 return self.GetHairColor(hairNodeIndex);
 
             Dictionary<string, int> CutsceneToDashLookup = self.Sprite.EntityAs<Player>().Inventory.Backpack
@@ -244,7 +265,7 @@ namespace Celeste.Mod.Foxeline
                 : FoxelineConst.noBackpackCutscenes;
 
             //if there's no animation id in the lookup, just do the default
-            if (!CutsceneToDashLookup.TryGetValue(self.Sprite.CurrentAnimationID, out var dashes))
+            if (!CutsceneToDashLookup.TryGetValue(self.Sprite.LastAnimationID, out var dashes))
                 return self.GetHairColor(hairNodeIndex);
 
 
@@ -262,6 +283,18 @@ namespace Celeste.Mod.Foxeline
                     dashes = Math.Max(Math.Min(dashes, hairColors[hairNodeIndex].Count - 1), 0);
                     return hairColors[hairNodeIndex][dashes];
                 }
+            }
+
+            //NON-VANILLA
+            if (!FoxelineModule.Settings.UseVanillaHairColor)
+            {
+                int previousDashes = player.Dashes;
+
+                player.Dashes = dashes;
+                Color hairColor = self.GetHairColor(hairNodeIndex);
+                player.Dashes = previousDashes;
+
+                return hairColor;
             }
 
             //VANILLA FALLBACK
@@ -282,7 +315,7 @@ namespace Celeste.Mod.Foxeline
         public static bool isCrouched(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "duck" or "slide"
+                Sprite.LastAnimationID: "duck" or "slide"
             };
 
         /// <summary>
@@ -293,7 +326,7 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldDroopTail(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "spin" or "launch"
+                Sprite.LastAnimationID: "launch" or "spin"
             }
             || (hair.Entity is Player && hair.Sprite.EntityAs<Player>().Stamina <= Player.ClimbTiredThreshold);
 
@@ -305,7 +338,20 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldFlipTail(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "wakeUp" or "sleep" or "sitDown" or "bagDown" or "asleep" or "halfWakeUp"
+                Sprite.LastAnimationID: "asleep" or "bagDown" or "edgeBack" or "halfWakeUp" or "sitDown" or "sleep"
+                or "wakeUp"
+            };
+
+        /// <summary>
+        /// Determines whether the tail should be laying on the ground based on the current animation ID of the player's hair.
+        /// </summary>
+        /// <param name="hair">The player's hair.</param>
+        /// <returns><c>true</c> if the tail should be laying on the ground; otherwise, <c>false</c>.</returns>
+        public static bool shouldRestTail(PlayerHair hair)
+            => hair is
+            {
+                Sprite.LastAnimationID: "asleep" or "bagDown" or "downed" or "edgeBack" or "halfWakeUp"
+                or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
             };
 
         /// <summary>
@@ -316,7 +362,8 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldStretchTail(PlayerHair hair)
             => hair is
             {
-                Sprite.CurrentAnimationID: "edge" or "idleC"
+                Sprite.LastAnimationID: "dangling" or "edge" or "edgeBack" or "idleC" or "runWind" or "shaking"
+                or "tired" or "tiredStill"
             }
             || isCrouched(hair);
 
