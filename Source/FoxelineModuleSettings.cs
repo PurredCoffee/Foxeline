@@ -28,7 +28,24 @@ namespace Celeste.Mod.Foxeline
         [SettingSubHeader("Extra")]
 
         [SettingSubText("(VANILLA/SMH PLUS ONLY)")]
-        public bool FixCutscenes { get; set; } = true;
+        public bool FixCutscenes
+        {
+            get => _FixCutscenes;
+            set
+            {
+                if (_FixCutscenes == value)
+                    return;
+
+                _FixCutscenes = value;
+
+                //disable the Use Vanilla Hair Color setting if Fix Cutscenes is off
+                if (UseVanillaHairColorEntry is not null)
+                    UseVanillaHairColorEntry.Disabled = !_FixCutscenes;
+            }
+        }
+        private bool _FixCutscenes = true;
+
+        public bool UseVanillaHairColor { get; set; } = true;
 
         [SettingSubText("Badeline's tail configuration")]
         public BadelineTailDefaults BadelineTail { get; set; } = new BadelineTailDefaults();
@@ -38,6 +55,22 @@ namespace Celeste.Mod.Foxeline
 
         [SettingSubText("MIGHT LOOK WEIRD, not Synced with other players")]
         public Constants FoxelineConstants { get; set; } = new Constants();
+
+        private TextMenu.OnOff UseVanillaHairColorEntry = default!;
+        public void CreateUseVanillaHairColorEntry(TextMenu menu, bool inGame)
+        {
+            menu.Add(UseVanillaHairColorEntry =
+                    new TextMenu.OnOff(nameof(UseVanillaHairColor).SpacedPascalCase(), UseVanillaHairColor));
+
+            //i don't know why these aren't generic
+            //AddDescription also expects the item to be in the menu when calling
+            UseVanillaHairColorEntry.AddDescription(menu,
+                "Set to off if you want cutscene animations to use custom hair colors, like Hyperline's");
+
+            UseVanillaHairColorEntry.Change(newValue => UseVanillaHairColor = newValue);
+
+            UseVanillaHairColorEntry.Disabled = !FixCutscenes;
+        }
 
         [SettingSubMenu]
         public class TailDefaults

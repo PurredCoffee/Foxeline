@@ -236,7 +236,7 @@ namespace Celeste.Mod.Foxeline
             //only do this if:
             //- we're fixing cutscenes
             //- the entity is a Player
-            if (!FoxelineModule.Settings.FixCutscenes || self.Entity is not Player)
+            if (!FoxelineModule.Settings.FixCutscenes || self.Entity is not Player player)
                 return self.GetHairColor(hairNodeIndex);
 
             Dictionary<string, int> CutsceneToDashLookup = self.Sprite.EntityAs<Player>().Inventory.Backpack
@@ -262,6 +262,18 @@ namespace Celeste.Mod.Foxeline
                     dashes = Math.Max(Math.Min(dashes, hairColors[hairNodeIndex].Count - 1), 0);
                     return hairColors[hairNodeIndex][dashes];
                 }
+            }
+
+            //NON-VANILLA
+            if (!FoxelineModule.Settings.UseVanillaHairColor)
+            {
+                int previousDashes = player.Dashes;
+
+                player.Dashes = dashes;
+                Color hairColor = self.GetHairColor(hairNodeIndex);
+                player.Dashes = previousDashes;
+
+                return hairColor;
             }
 
             //VANILLA FALLBACK
