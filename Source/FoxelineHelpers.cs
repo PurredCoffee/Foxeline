@@ -180,7 +180,7 @@ namespace Celeste.Mod.Foxeline
             {
                 MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
                 bool fill = (i < FoxelineConst.tailLen * (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f) != getPaintBrushTail(self);
-                //fill color is either the hair color or a blend of white and the hair color at the tip of the tail and the base of the tail (sometimes visible)
+                //fill color is either the hair color or a blend of the hair color at the tip of the tail and the base of the tail (sometimes visible)
                 float lerp = Math.Min((float)i / FoxelineConst.tailLen, 1) * self.Sprite.HairCount;
                 int hairNodeIndex = (int)lerp;
                 int nextHairNodeIndex = Math.Min(hairNodeIndex + 1, self.Sprite.HairCount - 1);
@@ -188,7 +188,7 @@ namespace Celeste.Mod.Foxeline
                 Color color = fill
                     ? fullColor
                     : Color.Lerp(
-                        Color.White,
+                        FoxelineModule.Settings.TailBrushColor,
                         fullColor,
                         getTailBrushTint(self));
                 Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();
