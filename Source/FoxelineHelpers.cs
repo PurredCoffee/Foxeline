@@ -28,7 +28,7 @@ namespace Celeste.Mod.Foxeline
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static bool _TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail) {
             if(hair.Entity is Ghost ghost) {
-                if(TailComponent.TailInformation.TryGetValue(ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults? tailInfo)) {
+                if(CelesteNet.TailComponent.TailInformation.TryGetValue(ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults? tailInfo)) {
                     tail = tailInfo;
                     return true;
                 }
