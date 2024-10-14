@@ -44,7 +44,7 @@ namespace Celeste.Mod.Foxeline
             {"sitDown", 1},
             {"sleep", 1},
             {"spin", 1},
-            {"wakeup", 1},
+            {"wakeUp", 1},
         };
         public static readonly Dictionary<string, int> noBackpackCutscenes = new Dictionary<string, int>()
         {
@@ -60,7 +60,7 @@ namespace Celeste.Mod.Foxeline
             {"sitDown", 1},
             {"sleep", 1},
             {"spin", 1},
-            {"wakeup", 1},
+            {"wakeUp", 1},
 
             //extra no backpack animations
             {"downed", 1},
