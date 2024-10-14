@@ -326,7 +326,7 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldDroopTail(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "spin" or "launch"
+                Sprite.LastAnimationID: "launch" or "spin"
             }
             || (hair.Entity is Player && hair.Sprite.EntityAs<Player>().Stamina <= Player.ClimbTiredThreshold);
 
@@ -338,7 +338,8 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldFlipTail(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "wakeUp" or "sleep" or "sitDown" or "bagDown" or "asleep" or "halfWakeUp"
+                Sprite.LastAnimationID: "asleep" or "bagDown" or "edgeBack" or "halfWakeUp" or "sitDown" or "sleep"
+                or "wakeUp"
             };
 
         /// <summary>
@@ -349,8 +350,8 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldRestTail(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "wakeUp" or "sleep" or "sitDown" or "bagDown" or "asleep" or "halfWakeUp"
-                or "roll" or "rollGetUp" or "downed"
+                Sprite.LastAnimationID: "asleep" or "bagDown" or "downed" or "edgeBack" or "halfWakeUp"
+                or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
             };
 
         /// <summary>
@@ -361,7 +362,8 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldStretchTail(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "edge" or "idleC"
+                Sprite.LastAnimationID: "dangling" or "edge" or "edgeBack" or "idleC" or "runWind" or "shaking"
+                or "tired" or "tiredStill"
             }
             || isCrouched(hair);
 
