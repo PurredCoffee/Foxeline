@@ -27,7 +27,7 @@ namespace Celeste.Mod.Foxeline
             {"carryTheoCollapse", new Vector2(6,4)},
             {"carryTheoWalk", new Vector2(2,6)},
             {"edgeBack", new Vector2(0,6)},
-            {"runWind", new Vector2(-8, 4)},
+            {"runWind", new Vector2(-8,4)},
             {"starFly", new Vector2(0,0)},
 
             //modded animations
