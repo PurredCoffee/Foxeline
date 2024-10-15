@@ -461,7 +461,7 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldRestTail(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "asleep" or "bagDown" or "downed" or "edgeBack" or "halfWakeUp"
+                Sprite.LastAnimationID: "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
                 or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
             };
 
