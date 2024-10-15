@@ -29,6 +29,7 @@ namespace Celeste.Mod.Foxeline
             {"edgeBack", new Vector2(0,6)},
             {"runWind", new Vector2(-8,4)},
             {"starFly", new Vector2(0,0)},
+            {"tentacle_dangling", new Vector2(-2,12)},
 
             //modded animations
             {"anim_player_elytra_fly", new Vector2(-6,2)} //CommunalHelper - elytra
