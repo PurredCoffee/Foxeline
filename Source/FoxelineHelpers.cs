@@ -426,7 +426,7 @@ namespace Celeste.Mod.Foxeline
         public static bool isCrouched(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "duck" or "slide"
+                Sprite.LastAnimationID: "duck" or "slide" or "hug"
             };
 
         /// <summary>
