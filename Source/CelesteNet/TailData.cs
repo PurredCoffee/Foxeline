@@ -35,10 +35,13 @@ public class TailData : DataType<TailData>
     public TailData(DataPlayerInfo player) {
         Player = player;
         TailInformation = new FoxelineModuleSettings.TailDefaults {
+            CollectTails = FoxelineModule.Settings.CollectTails,
             Tail = FoxelineModule.Settings.Tail,
             TailBrushTint = FoxelineModule.Settings.TailBrushTint,
             TailBrushColor = FoxelineModule.Settings.TailBrushColor,
+            TailCount = FoxelineModule.Settings.TailCount,
             TailScale = FoxelineModule.Settings.TailScale,
+            TailSpread = FoxelineModule.Settings.TailSpread,
             FeatherTail = FoxelineModule.Settings.FeatherTail,
             PaintBrushTail = FoxelineModule.Settings.PaintBrushTail,
         };
@@ -92,10 +95,13 @@ public class TailData : DataType<TailData>
 
     private void ReadVersion0(CelesteNetBinaryReader reader)
         => TailInformation = new FoxelineModuleSettings.TailDefaults {
+            CollectTails = reader.ReadBoolean(),
             Tail = (TailVariant)reader.ReadByte(),
             TailBrushTint = reader.ReadByte(),
             TailBrushColor = reader.ReadColorNoA(),
+            TailCount = Math.Max((byte)1, Math.Min(reader.ReadByte(), (byte)9)),
             TailScale = Math.Min(reader.ReadUInt16(), FoxelineModule.Settings.FoxelineConstants.ClampCelesteNetTailSize),
+            TailSpread = Math.Min(reader.ReadByte(), (byte)100),
             FeatherTail = reader.ReadBoolean(),
             PaintBrushTail = reader.ReadBoolean()
         };
@@ -104,10 +110,13 @@ public class TailData : DataType<TailData>
 
     protected override void Write(CelesteNetBinaryWriter writer) {
         writer.Write(LatestPacketVersion);
+        writer.Write(TailInformation.CollectTails);
         writer.Write((byte)TailInformation.Tail);
         writer.Write((byte)TailInformation.TailBrushTint);
         writer.WriteNoA(TailInformation.TailBrushColor);
+        writer.Write((byte)TailInformation.TailCount);
         writer.Write((ushort)TailInformation.TailScale);
+        writer.Write((byte)TailInformation.TailSpread);
         writer.Write(TailInformation.FeatherTail);
         writer.Write(TailInformation.PaintBrushTail);
     }

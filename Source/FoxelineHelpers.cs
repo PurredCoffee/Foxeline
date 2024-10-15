@@ -64,7 +64,6 @@ namespace Celeste.Mod.Foxeline
         /// <summary>
         /// Gets the tail scale for the player based on the settings
         /// </summary>
-        /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>scaling factor of the tail</returns>
         public static float getTailScale(PlayerHair self)
@@ -83,9 +82,69 @@ namespace Celeste.Mod.Foxeline
             return FoxelineModule.Settings.CelestenetDefaults.TailScale / 100f;
         }
         /// <summary>
+        /// Gets the tail count for the player based on the settings
+        /// </summary>
+        /// <param name="self">PlayerHair object</param>
+        /// <returns>Number of tails on the player</returns>
+        public static int getTailCount(PlayerHair self)
+        {
+            if(isPlayerHair(self))
+            {
+                return FoxelineModule.Settings.TailCount;
+            }
+            if(isBadelineHair(self))
+            {
+                return FoxelineModule.Settings.BadelineTail.TailCount;
+            }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.TailCount;
+            }
+            return FoxelineModule.Settings.CelestenetDefaults.TailCount;
+        }
+        /// <summary>
+        /// Gets the tail offset for the player based on the settings
+        /// </summary>
+        /// <param name="self">PlayerHair object</param>
+        /// <returns>Whether tails should be drawn collectively or with separate outlines</returns>
+        public static bool getCollectTails(PlayerHair self)
+        {
+            if(isPlayerHair(self))
+            {
+                return FoxelineModule.Settings.CollectTails;
+            }
+            if(isBadelineHair(self))
+            {
+                return FoxelineModule.Settings.BadelineTail.CollectTails;
+            }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.CollectTails;
+            }
+            return FoxelineModule.Settings.CelestenetDefaults.CollectTails;
+        }
+
+        /// <summary>
+        /// Gets the tail spread for the player based on the settings
+        /// </summary>
+        /// <param name="self">PlayerHair object</param>
+        /// <returns>Spread factor of the tail</returns>
+        public static float getTailSpread(PlayerHair self)
+        {
+            if(isPlayerHair(self))
+            {
+                return FoxelineModule.Settings.TailSpread / 100f;
+            }
+            if(isBadelineHair(self))
+            {
+                return FoxelineModule.Settings.BadelineTail.TailSpread / 100f;
+            }
+            if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+                return tail.TailSpread / 100f;
+            }
+            return FoxelineModule.Settings.CelestenetDefaults.TailSpread / 100f;
+        }
+        /// <summary>
         /// Flag to determine if the tail should be painted as a brush or not
         /// </summary>
-        /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>True if tail should be painted as a brush</returns>
         public static bool getPaintBrushTail(PlayerHair self)
@@ -106,7 +165,6 @@ namespace Celeste.Mod.Foxeline
         /// <summary>
         /// Gets the tail brush tint for the player based on the settings
         /// </summary>
-        /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>Color multiplier for the tip of the tail</returns>
         public static float getTailBrushTint(PlayerHair self)
@@ -127,7 +185,6 @@ namespace Celeste.Mod.Foxeline
         /// <summary>
         /// Gets the tail brush color for the player based on the settings
         /// </summary>
-        /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>Color for the tip of the tail</returns>
         public static Color getTailBrushColor(PlayerHair self)
@@ -148,7 +205,6 @@ namespace Celeste.Mod.Foxeline
         /// <summary>
         /// Gets the feather tail flag for the player based on the settings
         /// </summary>
-        /// <param name="selfData">selfData Object for the PlayerHair</param>
         /// <param name="self">PlayerHair object</param>
         /// <returns>True if the tail should be drawn while player is in feather</returns>
         public static bool getFeatherTail(PlayerHair self)
@@ -165,6 +221,36 @@ namespace Celeste.Mod.Foxeline
                 return tail.FeatherTail;
             }
             return FoxelineModule.Settings.CelestenetDefaults.FeatherTail;
+        }
+
+        /// <summary>
+        /// Gets the order in which the tails should be drawn
+        /// </summary>
+        /// <param name="tailCount">Number of tails</param>
+        /// <returns>Array of tail indices in the order they should be drawn</returns>
+        public static int[] getTailOrder(int tailCount) {
+            switch (tailCount) {
+                case 1:
+                    return [ 0 ];
+                case 2:
+                    return [ 1, 0 ];
+                case 3:
+                    return [ 2, 0, 1 ];
+                case 4:
+                    return [ 2, 1, 3, 0 ];
+                case 5:
+                    return [ 4, 0, 3, 1, 2 ];
+                case 6:
+                    return [ 5, 0, 3, 2, 4, 1 ];
+                case 7:
+                    return [ 6, 0, 5, 1, 4, 2, 3 ];
+                case 8:
+                    return [ 7, 0, 6, 1, 4, 3, 5, 2 ];
+                case 9:
+                    return [ 8, 0, 7, 1, 6, 5, 2, 3, 4 ];
+                default:
+                    return [];
+            }
         }
         /// <summary>
         /// Clamps the tail piece into reach of the previous tail piece
@@ -187,16 +273,15 @@ namespace Celeste.Mod.Foxeline
         /// </summary>
         /// <param name="self">The PlayerHair object</param>
         /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-        public static void drawTail(PlayerHair self, DynamicData selfData)
+        public static void drawTailInner(PlayerHair self, DynamicData selfData, int o)
         {
-            List<Vector2> tailOffset = selfData.Get<List<Vector2>>(FoxelineConst.TailOffset);
+            List<List<Vector2>> tailOffset = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset);
             int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (getTailScale(self) > 1 ? 1 : 0);
             Color[] gradient = new Color[self.Sprite.HairCount];
             for (int i = 0; i < self.Sprite.HairCount; i++)
             {
                 gradient[i] = getHairColor(i, self, selfData);
             }
-            //repeat but fill this time
             for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
             {
                 MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
@@ -212,7 +297,7 @@ namespace Celeste.Mod.Foxeline
                         getTailBrushColor(self),
                         fullColor,
                         getTailBrushTint(self));
-                Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();
+                Vector2 position = self.Nodes[0].Floor() + tailOffset[o][i].Floor();
                 Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
                 float Scale = getTailScale(self) / (getTailScale(self) > 1 ? 2 : 1);
                 tex.Draw(position, center, color, Scale);
@@ -224,16 +309,16 @@ namespace Celeste.Mod.Foxeline
         /// </summary>
         /// <param name="self">The PlayerHair object to draw the tail next to</param>
         /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-        public static void drawTailOutline(PlayerHair self, DynamicData selfData)
+        public static void drawTailOutline(PlayerHair self, DynamicData selfData, int o)
         {
-            List<Vector2> tailOffset = selfData.Get<List<Vector2>>(FoxelineConst.TailOffset);
+            List<List<Vector2>> tailOffset = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset);
             int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (getTailScale(self) > 1 ? 1 : 0);
             for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
             {
                 //we select the current tail piece. tailID is currently baked and chosen to be pretty
                 MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
                 //we calculate the position of the texture by offsetting it by half its size
-                Vector2 position = self.Nodes[0].Floor() + tailOffset[i].Floor();
+                Vector2 position = self.Nodes[0].Floor() + tailOffset[o][i].Floor();
                 Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
                 float Scale = getTailScale(self) / (getTailScale(self) > 1 ? 2 : 1);
                 tex.Draw(position + Vector2.UnitX, center, Color.Black, Scale);
@@ -241,9 +326,35 @@ namespace Celeste.Mod.Foxeline
                 tex.Draw(position - Vector2.UnitX, center, Color.Black, Scale);
                 tex.Draw(position - Vector2.UnitY, center, Color.Black, Scale);
             }
-
         }
 
+        /// <summary>
+        /// Draws the tail and outline of the player based on the tail positions defined under selfData and the hair offset
+        /// </summary>
+        /// <param name="self">The PlayerHair object</param>
+        /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
+        public static void drawTails(PlayerHair self, DynamicData selfData)
+        {
+            int tailCount = Math.Min(getTailCount(self), selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset).Count);
+            int[] tailOrder = getTailOrder(tailCount);
+            if(getCollectTails(self))
+            {
+                foreach (int o in tailOrder)
+                {
+                    drawTailOutline(self, selfData, o);
+                }
+                foreach (int o in tailOrder)
+                {
+                    drawTailInner(self, selfData, o);
+                }
+                return;
+            }
+            foreach (int o in tailOrder)
+            {
+                drawTailOutline(self, selfData, o);
+                drawTailInner(self, selfData, o);
+            }
+        }
 
         /// <summary>
         /// Helper function to get the hair color of the player based on the current animation

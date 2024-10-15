@@ -29,6 +29,13 @@ namespace Celeste.Mod.Foxeline
         [SettingRange(25, 1000, true)]
         public int TailScale { get; set; } = 100;
 
+        [SettingRange(1, 9)]
+        public int TailCount { get; set; } = 1;
+
+        public bool CollectTails { get; set; } = true;
+        [SettingRange(0, 100, true)]
+        public int TailSpread { get; set; } = 40;
+
         public bool FeatherTail { get; set; } = true;
 
         public bool PaintBrushTail { get; set; } = false;
@@ -152,6 +159,14 @@ namespace Celeste.Mod.Foxeline
 
             [SettingRange(25, 1000, true)]
             public int TailScale { get; set; } = 100;
+
+            [SettingRange(1, 9)]
+            public int TailCount { get; set; } = 1;
+
+            public bool CollectTails { get; set; } = true;
+            
+            [SettingRange(0, 100, true)]
+            public int TailSpread { get; set; } = 40;
 
             public bool FeatherTail { get; set; } = true;
 
