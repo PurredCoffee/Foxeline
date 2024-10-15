@@ -32,7 +32,8 @@ namespace Celeste.Mod.Foxeline
         [SettingRange(1, 9)]
         public int TailCount { get; set; } = 1;
 
-        public bool CollectTails { get; set; } = true;
+        [SettingSubText("Draw the outline of each tail separately instead of as a whole")]
+        public bool SeparateTails { get; set; } = true;
         [SettingRange(0, 100, true)]
         public int TailSpread { get; set; } = 40;
 
@@ -163,8 +164,9 @@ namespace Celeste.Mod.Foxeline
             [SettingRange(1, 9)]
             public int TailCount { get; set; } = 1;
 
-            public bool CollectTails { get; set; } = true;
-            
+            [SettingSubText("Draw the outline of each tail separately instead of as a whole")]
+            public bool SeparateTails { get; set; } = true;
+
             [SettingRange(0, 100, true)]
             public int TailSpread { get; set; } = 40;
 

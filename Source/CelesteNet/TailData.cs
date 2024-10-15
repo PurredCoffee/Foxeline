@@ -35,7 +35,7 @@ public class TailData : DataType<TailData>
     public TailData(DataPlayerInfo player) {
         Player = player;
         TailInformation = new FoxelineModuleSettings.TailDefaults {
-            CollectTails = FoxelineModule.Settings.CollectTails,
+            SeparateTails = FoxelineModule.Settings.SeparateTails,
             Tail = FoxelineModule.Settings.Tail,
             TailBrushTint = FoxelineModule.Settings.TailBrushTint,
             TailBrushColor = FoxelineModule.Settings.TailBrushColor,
@@ -95,7 +95,7 @@ public class TailData : DataType<TailData>
 
     private void ReadVersion0(CelesteNetBinaryReader reader)
         => TailInformation = new FoxelineModuleSettings.TailDefaults {
-            CollectTails = reader.ReadBoolean(),
+            SeparateTails = reader.ReadBoolean(),
             Tail = (TailVariant)reader.ReadByte(),
             TailBrushTint = reader.ReadByte(),
             TailBrushColor = reader.ReadColorNoA(),
@@ -110,7 +110,7 @@ public class TailData : DataType<TailData>
 
     protected override void Write(CelesteNetBinaryWriter writer) {
         writer.Write(LatestPacketVersion);
-        writer.Write(TailInformation.CollectTails);
+        writer.Write(TailInformation.SeparateTails);
         writer.Write((byte)TailInformation.Tail);
         writer.Write((byte)TailInformation.TailBrushTint);
         writer.WriteNoA(TailInformation.TailBrushColor);

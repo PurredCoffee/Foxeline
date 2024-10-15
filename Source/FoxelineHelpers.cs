@@ -106,20 +106,20 @@ namespace Celeste.Mod.Foxeline
         /// </summary>
         /// <param name="self">PlayerHair object</param>
         /// <returns>Whether tails should be drawn collectively or with separate outlines</returns>
-        public static bool getCollectTails(PlayerHair self)
+        public static bool getSeparateTails(PlayerHair self)
         {
             if(isPlayerHair(self))
             {
-                return FoxelineModule.Settings.CollectTails;
+                return FoxelineModule.Settings.SeparateTails;
             }
             if(isBadelineHair(self))
             {
-                return FoxelineModule.Settings.BadelineTail.CollectTails;
+                return FoxelineModule.Settings.BadelineTail.SeparateTails;
             }
             if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
-                return tail.CollectTails;
+                return tail.SeparateTails;
             }
-            return FoxelineModule.Settings.CelestenetDefaults.CollectTails;
+            return FoxelineModule.Settings.CelestenetDefaults.SeparateTails;
         }
 
         /// <summary>
@@ -335,9 +335,12 @@ namespace Celeste.Mod.Foxeline
         /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
         public static void drawTails(PlayerHair self, DynamicData selfData)
         {
+            if(!self.Visible || !self.Sprite.Visible) {
+                return;
+            }
             int tailCount = Math.Min(getTailCount(self), selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset).Count);
             int[] tailOrder = getTailOrder(tailCount);
-            if(getCollectTails(self))
+            if(!getSeparateTails(self))
             {
                 foreach (int o in tailOrder)
                 {
