@@ -359,6 +359,14 @@ namespace Celeste.Mod.Foxeline
             }
         }
 
+        public static void drawTailPositions(PlayerHair self, DynamicData selfData)
+        {
+            List<List<Vector2>> tailPositions = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailPositions);
+
+            foreach (List<Vector2> pos in tailPositions)
+                Draw.Point(pos[0], Color.Cyan);
+        }
+
         /// <summary>
         /// Helper function to get the hair color of the player based on the current animation
         /// </summary>
@@ -429,7 +437,7 @@ namespace Celeste.Mod.Foxeline
         public static bool isCrouched(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "duck" or "slide"
+                Sprite.LastAnimationID: "duck" or "slide" or "hug"
             };
 
         /// <summary>
@@ -464,7 +472,7 @@ namespace Celeste.Mod.Foxeline
         public static bool shouldRestTail(PlayerHair hair)
             => hair is
             {
-                Sprite.LastAnimationID: "asleep" or "bagDown" or "downed" or "edgeBack" or "halfWakeUp"
+                Sprite.LastAnimationID: "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
                 or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
             };
 

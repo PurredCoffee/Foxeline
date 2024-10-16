@@ -295,6 +295,29 @@ namespace Celeste.Mod.Foxeline
             return FoxelineModule.Instance.bangs[self.Sprite.HairFrame];
         }
 
+        //render the exact positions the tail(s) will grow out of for debugging help
+        public static void Component_DebugRender(On.Monocle.Component.orig_DebugRender orig, Component self, Camera camera)
+        {
+            orig(self, camera);
+
+            //the player got its own hook because the hurtbox is rendered after all the components have been rendered
+            //which hides the tail position
+            if (!(self is PlayerHair { Entity: not Player } hair && FoxelineHelpers.correctTailOwner(hair)))
+                return;
+
+            if (FoxelineHelpers.getTailVariant(hair) != TailVariant.None)
+                FoxelineHelpers.drawTailPositions(hair, DynamicData.For(self));
+        }
+
+        public static void Player_DebugRender(On.Celeste.Player.orig_DebugRender orig, Player self, Camera camera)
+        {
+            orig(self, camera);
+
+            PlayerHair hair = self.Hair;
+
+            if (FoxelineHelpers.getTailVariant(hair) != TailVariant.None)
+                FoxelineHelpers.drawTailPositions(hair, DynamicData.For(hair));
+        }
 
     }
 }

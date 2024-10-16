@@ -24,11 +24,12 @@ namespace Celeste.Mod.Foxeline
         public static readonly Dictionary<string, Vector2> customTailPositions = new Dictionary<string, Vector2>(){
             {"bigFall", new Vector2(7,-2)},
             {"bubble", new Vector2(0,-4)},
-            {"carryTheoCollapse", new Vector2(8,-2)},
+            {"carryTheoCollapse", new Vector2(6,4)},
             {"carryTheoWalk", new Vector2(2,6)},
             {"edgeBack", new Vector2(0,6)},
-            {"runWind", new Vector2(-8, 4)},
+            {"runWind", new Vector2(-8,4)},
             {"starFly", new Vector2(0,0)},
+            {"tentacle_dangling", new Vector2(-2,12)},
 
             //modded animations
             {"anim_player_elytra_fly", new Vector2(-6,2)} //CommunalHelper - elytra
