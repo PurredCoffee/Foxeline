@@ -356,6 +356,14 @@ namespace Celeste.Mod.Foxeline
             }
         }
 
+        public static void drawTailPositions(PlayerHair self, DynamicData selfData)
+        {
+            List<List<Vector2>> tailPositions = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailPositions);
+
+            foreach (List<Vector2> pos in tailPositions)
+                Draw.Point(pos[0], Color.Cyan);
+        }
+
         /// <summary>
         /// Helper function to get the hair color of the player based on the current animation
         /// </summary>
