@@ -13,7 +13,7 @@ public static class FoxelineConst
     public const string GravHelperFlip = "GravityHelper_Inverted";
     public const string smh_hairConfig = "smh_hairConfig";
 
-    public static readonly Dictionary<string, Vector2> customTailPositions = new Dictionary<string, Vector2>(){
+    public static readonly Dictionary<string, Vector2> customTailPositions = new() {
         {"bigFall", new Vector2(7,-2)},
         {"bubble", new Vector2(0,-4)},
         {"carryTheoCollapse", new Vector2(6,4)},
@@ -26,7 +26,8 @@ public static class FoxelineConst
         //modded animations
         {"anim_player_elytra_fly", new Vector2(-6,2)} //CommunalHelper - elytra
     };
-    public static readonly Dictionary<string, int> backpackCutscenes = new Dictionary<string, int>() {
+
+    public static readonly Dictionary<string, int> backpackCutscenes = new() {
         {"asleep", 1},
         {"bagDown", 1},
         {"bubble", 1},
@@ -41,8 +42,8 @@ public static class FoxelineConst
         {"spin", 1},
         {"wakeUp", 1},
     };
-    public static readonly Dictionary<string, int> noBackpackCutscenes = new Dictionary<string, int>()
-    {
+
+    public static readonly Dictionary<string, int> noBackpackCutscenes = new() {
         {"asleep", 1},
         {"bagDown", 1},
         {"bubble", 2},
@@ -62,7 +63,8 @@ public static class FoxelineConst
         {"roll", 1},
         {"rollGetUp", 1},
     };
-    public static readonly float[] tailSize = { 3, 2, 1, 3, 1, 2, 2, 2 };
-    public static readonly int[] tailID = { 0, 2, 3, 4, 4, 3, 1, 0 };
+
+    public static readonly float[] tailSize = [3, 2, 1, 3, 1, 2, 2, 2];
+    public static readonly int[] tailID = [0, 2, 3, 4, 4, 3, 1, 0];
     public static readonly int tailLen = tailSize.Length;
 }
