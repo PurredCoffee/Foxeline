@@ -41,7 +41,6 @@ public static class FoxelineHelpers
     /// <summary>
     /// Gets the tail variant for the player based on the settings
     /// </summary>
-    /// <param name="selfData">selfData Object for the PlayerHair</param>
     /// <param name="self">PlayerHair object</param>
     /// <returns>TailVariant enum corresponding to the tail</returns>
     public static TailVariant getTailVariant(PlayerHair self)
@@ -381,6 +380,7 @@ public static class FoxelineHelpers
     /// </summary>
     /// <param name="self">The PlayerHair object</param>
     /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
+    /// <param name="o">The tail index to draw</param>
     public static void drawTailInner(PlayerHair self, DynamicData selfData, int o)
     {
         List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
