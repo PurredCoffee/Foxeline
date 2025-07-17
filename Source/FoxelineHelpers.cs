@@ -404,8 +404,8 @@ public static class FoxelineHelpers
                 : Color.Lerp(getTailBrushColor(self), fullColor, getTailBrushTint(self));
             Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][i].Floor();
             Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
-            float Scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
-            tex.Draw(position, center, color, Scale);
+            float scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
+            tex.Draw(position, center, color, scale);
         }
     }
 
@@ -427,12 +427,12 @@ public static class FoxelineHelpers
             //we calculate the position of the texture by offsetting it by half its size
             Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][i].Floor();
             Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
-            float Scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
+            float scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
 
-            tex.Draw(position + Vector2.UnitX, center, Color.Black, Scale);
-            tex.Draw(position + Vector2.UnitY, center, Color.Black, Scale);
-            tex.Draw(position - Vector2.UnitX, center, Color.Black, Scale);
-            tex.Draw(position - Vector2.UnitY, center, Color.Black, Scale);
+            tex.Draw(position + Vector2.UnitX, center, Color.Black, scale);
+            tex.Draw(position + Vector2.UnitY, center, Color.Black, scale);
+            tex.Draw(position - Vector2.UnitX, center, Color.Black, scale);
+            tex.Draw(position - Vector2.UnitY, center, Color.Black, scale);
         }
     }
 
@@ -485,12 +485,12 @@ public static class FoxelineHelpers
         if (!FoxelineModule.Settings.FixCutscenes || self.Entity is not Player player)
             return self.GetHairColor(hairNodeIndex);
 
-        Dictionary<string, int> CutsceneToDashLookup = self.Sprite.EntityAs<Player>().Inventory.Backpack
+        Dictionary<string, int> cutsceneToDashLookup = self.Sprite.EntityAs<Player>().Inventory.Backpack
             ? FoxelineConst.backpackCutscenes
             : FoxelineConst.noBackpackCutscenes;
 
         //if there's no animation id in the lookup, just do the default
-        if (!CutsceneToDashLookup.TryGetValue(self.Sprite.LastAnimationID, out var dashes))
+        if (!cutsceneToDashLookup.TryGetValue(self.Sprite.LastAnimationID, out var dashes))
             return self.GetHairColor(hairNodeIndex);
 
 
