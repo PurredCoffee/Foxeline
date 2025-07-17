@@ -275,6 +275,31 @@ public static class FoxelineHelpers
 
     #endregion
 
+    #region Tail data helpers
+
+    /// <summary>
+    /// Gets tail node positions for all tails.
+    /// </summary>
+    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
+    public static List<List<Vector2>> getAllTailPositions(DynamicData selfData)
+        => selfData.Get<List<List<Vector2>>>(FoxelineConst.TailPositions);
+
+    /// <summary>
+    /// Gets tail node offsets for all tails.
+    /// </summary>
+    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
+    public static List<List<Vector2>> getAllTailOffsets(DynamicData selfData)
+        => selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset);
+
+    /// <summary>
+    /// Gets tail node velocities for all tails.
+    /// </summary>
+    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
+    public static List<List<Vector2>> getAllTailVelocities(DynamicData selfData)
+        => selfData.Get<List<List<Vector2>>>(FoxelineConst.Velocity);
+
+    #endregion
+
     #region General helpers
 
     /// <summary>
@@ -358,7 +383,7 @@ public static class FoxelineHelpers
     /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
     public static void drawTailInner(PlayerHair self, DynamicData selfData, int o)
     {
-        List<List<Vector2>> tailOffset = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset);
+        List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
         int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
         Color[] gradient = new Color[self.Sprite.HairCount];
 
@@ -392,7 +417,7 @@ public static class FoxelineHelpers
     /// <param name="o">Tail index</param>
     public static void drawTailOutline(PlayerHair self, DynamicData selfData, int o)
     {
-        List<List<Vector2>> tailOffset = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset);
+        List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
         int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
         for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
         {
@@ -421,7 +446,7 @@ public static class FoxelineHelpers
         if (!self.Visible || !self.Sprite.Visible)
             return;
 
-        int tailCount = Math.Min(getTailCount(self), selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset).Count);
+        int tailCount = Math.Min(getTailCount(self), getAllTailOffsets(selfData).Count);
         int[] drawOrder = getTailOrder(tailCount);
         if (!getSeparateTails(self))
         {
@@ -441,7 +466,7 @@ public static class FoxelineHelpers
 
     public static void drawTailPositions(PlayerHair self, DynamicData selfData)
     {
-        foreach (List<Vector2> pos in selfData.Get<List<List<Vector2>>>(FoxelineConst.TailPositions))
+        foreach (List<Vector2> pos in getAllTailPositions(selfData))
             Draw.Point(pos[0], Color.Cyan);
     }
 
