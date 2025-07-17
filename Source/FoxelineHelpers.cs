@@ -277,6 +277,7 @@ public static class FoxelineHelpers
     /// </summary>
     /// <param name="tailPositions">List of tail positions to edit</param>
     /// <param name="i">Tail index</param>
+    /// <param name="tailScale">Tail scale multiplier</param>
     public static void clampTail(List<Vector2> tailPositions, int i, float tailScale)
     {
         if (Vector2.Distance(tailPositions[i - 1], tailPositions[i]) > FoxelineConst.tailSize[i] * tailScale)
@@ -328,6 +329,7 @@ public static class FoxelineHelpers
     /// </summary>
     /// <param name="self">The PlayerHair object to draw the tail next to</param>
     /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
+    /// <param name="o">Tail index</param>
     public static void drawTailOutline(PlayerHair self, DynamicData selfData, int o)
     {
         List<List<Vector2>> tailOffset = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset);
