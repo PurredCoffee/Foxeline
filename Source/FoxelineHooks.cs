@@ -180,16 +180,16 @@ namespace Celeste.Mod.Foxeline
 
                     //we clamp the tail piece into reach for the other tail piece as the current tail has moved
                     FoxelineHelpers.clampTail(tailPositions[o], i, tailScale);
-
-                    //update the tail offset for rendering because celeste will sometimes not use hair_move function
-                    //this is a bugfix
-                    tailOffsets[o][i] = tailPositions[o][i] - self.Nodes[0];
                 }
                 
                 //unrotate the difference
                 for (int i = 0; i < FoxelineConst.tailLen; i++) {
                     //undo the difference
                     tailPositions[o][i] -= rotatedDiff - diff;
+
+                    //update the tail offset for rendering because celeste will sometimes not use hair_move function
+                    //this is a bugfix
+                    tailOffsets[o][i] = tailPositions[o][i] - self.Nodes[0];
                 }
             }
         }
