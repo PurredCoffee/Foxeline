@@ -190,37 +190,30 @@ public static class FoxelineHelpers
         return FoxelineModule.Settings.CelestenetDefaults.FeatherTail;
     }
 
+    //instantiate the arrays once and keep them around to cut down on GC pressure
+    /// <summary>
+    ///   The order in which tails should be drawn, indexed by tail count.
+    /// </summary>
+    private static readonly int[][] tailDrawOrders = [
+        [], //no tails or invalid tail count
+        [0],
+        [1, 0],
+        [2, 0, 1],
+        [2, 1, 3, 0],
+        [4, 0, 3, 1, 2],
+        [5, 0, 3, 2, 4, 1],
+        [6, 0, 5, 1, 4, 2, 3],
+        [7, 0, 6, 1, 4, 3, 5, 2],
+        [8, 0, 7, 1, 6, 5, 2, 3, 4],
+    ];
+
     /// <summary>
     /// Gets the order in which the tails should be drawn
     /// </summary>
     /// <param name="tailCount">Number of tails</param>
     /// <returns>Array of tail indices in the order they should be drawn</returns>
     public static int[] getTailOrder(int tailCount)
-    {
-        switch (tailCount)
-        {
-            case 1:
-                return [0];
-            case 2:
-                return [1, 0];
-            case 3:
-                return [2, 0, 1];
-            case 4:
-                return [2, 1, 3, 0];
-            case 5:
-                return [4, 0, 3, 1, 2];
-            case 6:
-                return [5, 0, 3, 2, 4, 1];
-            case 7:
-                return [6, 0, 5, 1, 4, 2, 3];
-            case 8:
-                return [7, 0, 6, 1, 4, 3, 5, 2];
-            case 9:
-                return [8, 0, 7, 1, 6, 5, 2, 3, 4];
-            default:
-                return [];
-        }
-    }
+        => tailCount is >= 0 and <= 9 ? tailDrawOrders[tailCount] : tailDrawOrders[0];
 
     /// <summary>
     /// Clamps the tail piece into reach of the previous tail piece
