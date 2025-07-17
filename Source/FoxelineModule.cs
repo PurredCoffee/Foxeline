@@ -34,8 +34,8 @@ public class FoxelineModule : EverestModule
         // debug builds use verbose logging
         Logger.SetLogLevel(nameof(FoxelineModule), LogLevel.Verbose);
     #else
-            // release builds use info logging to reduce spam in log files
-            Logger.SetLogLevel(nameof(FoxelineModule), LogLevel.Info);
+        // release builds use info logging to reduce spam in log files
+        Logger.SetLogLevel(nameof(FoxelineModule), LogLevel.Info);
     #endif
     }
 
