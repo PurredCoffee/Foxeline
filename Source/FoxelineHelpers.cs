@@ -380,8 +380,8 @@ public static class FoxelineHelpers
     /// </summary>
     /// <param name="self">The PlayerHair object</param>
     /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    /// <param name="o">The tail index to draw</param>
-    public static void drawTailInner(PlayerHair self, DynamicData selfData, int o)
+    /// <param name="tailIndex">The tail index to draw</param>
+    public static void drawTailInner(PlayerHair self, DynamicData selfData, int tailIndex)
     {
         List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
         int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
@@ -402,7 +402,7 @@ public static class FoxelineHelpers
             Color color = fill
                 ? fullColor
                 : Color.Lerp(getTailBrushColor(self), fullColor, getTailBrushTint(self));
-            Vector2 position = self.Nodes[0].Floor() + tailOffset[o][i].Floor();
+            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][i].Floor();
             Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
             float Scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
             tex.Draw(position, center, color, Scale);
@@ -414,8 +414,8 @@ public static class FoxelineHelpers
     /// </summary>
     /// <param name="self">The PlayerHair object to draw the tail next to</param>
     /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    /// <param name="o">Tail index</param>
-    public static void drawTailOutline(PlayerHair self, DynamicData selfData, int o)
+    /// <param name="tailIndex">The tail index to draw</param>
+    public static void drawTailOutline(PlayerHair self, DynamicData selfData, int tailIndex)
     {
         List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
         int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
@@ -425,7 +425,7 @@ public static class FoxelineHelpers
             MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
 
             //we calculate the position of the texture by offsetting it by half its size
-            Vector2 position = self.Nodes[0].Floor() + tailOffset[o][i].Floor();
+            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][i].Floor();
             Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
             float Scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
 
@@ -450,17 +450,17 @@ public static class FoxelineHelpers
         int[] drawOrder = getTailOrder(tailCount);
         if (!getSeparateTails(self))
         {
-            foreach (int o in drawOrder)
-                drawTailOutline(self, selfData, o);
-            foreach (int o in drawOrder)
-                drawTailInner(self, selfData, o);
+            foreach (int tailIndex in drawOrder)
+                drawTailOutline(self, selfData, tailIndex);
+            foreach (int tailIndex in drawOrder)
+                drawTailInner(self, selfData, tailIndex);
             return;
         }
 
-        foreach (int o in drawOrder)
+        foreach (int tailIndex in drawOrder)
         {
-            drawTailOutline(self, selfData, o);
-            drawTailInner(self, selfData, o);
+            drawTailOutline(self, selfData, tailIndex);
+            drawTailInner(self, selfData, tailIndex);
         }
     }
 
