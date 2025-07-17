@@ -36,7 +36,7 @@ public static class FoxelineHooks
         bool stretchTail = FoxelineHelpers.shouldStretchTail(self);
 
         //Vertical flip
-        bool GravHelperFlip = DynamicData.For(self.Sprite.Entity).Data.TryGetValue(FoxelineConst.GravHelperFlip, out var value) && (bool)value;
+        bool GravHelperFlip = GravityHelperInterop.IsPlayerInverted();
         float flipped = self.Sprite.Scale.Y * (GravHelperFlip ? -1 : 1);
 
 

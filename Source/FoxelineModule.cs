@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Monocle;
+using MonoMod.ModInterop;
 
 namespace Celeste.Mod.Foxeline;
 
@@ -45,6 +46,8 @@ public class FoxelineModule : EverestModule
 
     public override void Load()
     {
+        typeof(GravityHelperInterop).ModInterop();
+
         On.Celeste.PlayerHair.Render += FoxelineHooks.PlayerHair_Render;
         On.Celeste.PlayerHair.ctor += FoxelineHooks.PlayerHair_ctor;
         On.Celeste.PlayerHair.Start += FoxelineHooks.PlayerHair_Start;

@@ -7,3 +7,5 @@
   OptionalDependencies:
     - Name: CelesteNet.Client
       Version: 2.3.1
+    - Name: GravityHelper
+      Version: 1.2.23
