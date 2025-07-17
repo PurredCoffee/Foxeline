@@ -8,11 +8,15 @@ using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Foxeline;
 
-public static class TailNetHelper {
-    public static bool TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail) {
-        if(FoxelineHelpers.isCnetInstalled()) {
+public static class TailNetHelper
+{
+    public static bool TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail)
+    {
+        if (FoxelineHelpers.isCnetInstalled())
+        {
             _TryGetTailInformation(hair, out tail);
-            if(tail != null) {
+            if (tail != null)
+            {
                 return true;
             }
         }
@@ -21,9 +25,12 @@ public static class TailNetHelper {
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static bool _TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail) {
-        if(hair.Entity is Ghost ghost) {
-            if(CelesteNet.TailComponent.TailInformation.TryGetValue(ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults tailInfo)) {
+    private static bool _TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail)
+    {
+        if (hair.Entity is Ghost ghost)
+        {
+            if (CelesteNet.TailComponent.TailInformation.TryGetValue(ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults tailInfo))
+            {
                 tail = tailInfo;
                 return true;
             }
@@ -43,19 +50,21 @@ public static class FoxelineHelpers
     /// <returns>TailVariant enum corresponding to the tail</returns>
     public static TailVariant getTailVariant(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.Tail;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.Tail;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.Tail;
         }
         return FoxelineModule.Settings.CelestenetDefaults.Tail;
     }
+
     /// <summary>
     /// Gets the tail scale for the player based on the settings
     /// </summary>
@@ -63,19 +72,21 @@ public static class FoxelineHelpers
     /// <returns>scaling factor of the tail</returns>
     public static float getTailScale(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.TailScale / 100f;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.TailScale / 100f;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.TailScale / 100f;
         }
         return FoxelineModule.Settings.CelestenetDefaults.TailScale / 100f;
     }
+
     /// <summary>
     /// Gets the tail count for the player based on the settings
     /// </summary>
@@ -83,19 +94,21 @@ public static class FoxelineHelpers
     /// <returns>Number of tails on the player</returns>
     public static int getTailCount(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.TailCount;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.TailCount;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.TailCount;
         }
         return FoxelineModule.Settings.CelestenetDefaults.TailCount;
     }
+
     /// <summary>
     /// Gets the tail offset for the player based on the settings
     /// </summary>
@@ -103,15 +116,16 @@ public static class FoxelineHelpers
     /// <returns>Whether tails should be drawn collectively or with separate outlines</returns>
     public static bool getSeparateTails(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.SeparateTails;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.SeparateTails;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.SeparateTails;
         }
         return FoxelineModule.Settings.CelestenetDefaults.SeparateTails;
@@ -124,19 +138,21 @@ public static class FoxelineHelpers
     /// <returns>Spread factor of the tail</returns>
     public static float getTailSpread(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.TailSpread / 100f;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.TailSpread / 100f;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.TailSpread / 100f;
         }
         return FoxelineModule.Settings.CelestenetDefaults.TailSpread / 100f;
     }
+
     /// <summary>
     /// Flag to determine if the tail should be painted as a brush or not
     /// </summary>
@@ -144,19 +160,21 @@ public static class FoxelineHelpers
     /// <returns>True if tail should be painted as a brush</returns>
     public static bool getPaintBrushTail(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.PaintBrushTail;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.PaintBrushTail;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.PaintBrushTail;
         }
         return FoxelineModule.Settings.CelestenetDefaults.PaintBrushTail;
     }
+
     /// <summary>
     /// Gets the tail brush tint for the player based on the settings
     /// </summary>
@@ -164,19 +182,21 @@ public static class FoxelineHelpers
     /// <returns>Color multiplier for the tip of the tail</returns>
     public static float getTailBrushTint(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.TailBrushTint / 100f;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.TailBrushTint / 100f;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.TailBrushTint / 100f;
         }
         return FoxelineModule.Settings.CelestenetDefaults.TailBrushTint / 100f;
     }
+
     /// <summary>
     /// Gets the tail brush color for the player based on the settings
     /// </summary>
@@ -184,19 +204,21 @@ public static class FoxelineHelpers
     /// <returns>Color for the tip of the tail</returns>
     public static Color getTailBrushColor(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.TailBrushColor;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.TailBrushColor;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.TailBrushColor;
         }
         return FoxelineModule.Settings.CelestenetDefaults.TailBrushColor;
     }
+
     /// <summary>
     /// Gets the feather tail flag for the player based on the settings
     /// </summary>
@@ -204,15 +226,16 @@ public static class FoxelineHelpers
     /// <returns>True if the tail should be drawn while player is in feather</returns>
     public static bool getFeatherTail(PlayerHair self)
     {
-        if(isPlayerHair(self))
+        if (isPlayerHair(self))
         {
             return FoxelineModule.Settings.FeatherTail;
         }
-        if(isBadelineHair(self))
+        if (isBadelineHair(self))
         {
             return FoxelineModule.Settings.BadelineTail.FeatherTail;
         }
-        if(TailNetHelper.TryGetTailInformation(self, out var tail)) {
+        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        {
             return tail.FeatherTail;
         }
         return FoxelineModule.Settings.CelestenetDefaults.FeatherTail;
@@ -223,26 +246,28 @@ public static class FoxelineHelpers
     /// </summary>
     /// <param name="tailCount">Number of tails</param>
     /// <returns>Array of tail indices in the order they should be drawn</returns>
-    public static int[] getTailOrder(int tailCount) {
-        switch (tailCount) {
+    public static int[] getTailOrder(int tailCount)
+    {
+        switch (tailCount)
+        {
             case 1:
-                return [ 0 ];
+                return [0];
             case 2:
-                return [ 1, 0 ];
+                return [1, 0];
             case 3:
-                return [ 2, 0, 1 ];
+                return [2, 0, 1];
             case 4:
-                return [ 2, 1, 3, 0 ];
+                return [2, 1, 3, 0];
             case 5:
-                return [ 4, 0, 3, 1, 2 ];
+                return [4, 0, 3, 1, 2];
             case 6:
-                return [ 5, 0, 3, 2, 4, 1 ];
+                return [5, 0, 3, 2, 4, 1];
             case 7:
-                return [ 6, 0, 5, 1, 4, 2, 3 ];
+                return [6, 0, 5, 1, 4, 2, 3];
             case 8:
-                return [ 7, 0, 6, 1, 4, 3, 5, 2 ];
+                return [7, 0, 6, 1, 4, 3, 5, 2];
             case 9:
-                return [ 8, 0, 7, 1, 6, 5, 2, 3, 4 ];
+                return [8, 0, 7, 1, 6, 5, 2, 3, 4];
             default:
                 return [];
         }
@@ -254,7 +279,6 @@ public static class FoxelineHelpers
     /// <param name="i">Tail index</param>
     public static void clampTail(List<Vector2> tailPositions, int i, float tailScale)
     {
-
         if (Vector2.Distance(tailPositions[i - 1], tailPositions[i]) > FoxelineConst.tailSize[i] * tailScale)
         {
             Vector2 diff = tailPositions[i - 1] - tailPositions[i];
@@ -330,12 +354,13 @@ public static class FoxelineHelpers
     /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
     public static void drawTails(PlayerHair self, DynamicData selfData)
     {
-        if(!self.Visible || !self.Sprite.Visible) {
+        if (!self.Visible || !self.Sprite.Visible)
+        {
             return;
         }
         int tailCount = Math.Min(getTailCount(self), selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset).Count);
         int[] tailOrder = getTailOrder(tailCount);
-        if(!getSeparateTails(self))
+        if (!getSeparateTails(self))
         {
             foreach (int o in tailOrder)
             {
@@ -430,10 +455,7 @@ public static class FoxelineHelpers
     /// <param name="hair">The player hair.</param>
     /// <returns><c>true</c> if the player hair is crouched; otherwise, <c>false</c>.</returns>
     public static bool isCrouched(PlayerHair hair)
-        => hair is
-        {
-            Sprite.LastAnimationID: "duck" or "slide" or "hug"
-        };
+        => hair is { Sprite.LastAnimationID: "duck" or "slide" or "hug" };
 
     /// <summary>
     /// Determines whether the player's hair should droop the tail.
@@ -441,10 +463,7 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the hair should droop the tail; otherwise, <c>false</c>.</returns>
     public static bool shouldDroopTail(PlayerHair hair)
-        => hair is
-            {
-                Sprite.LastAnimationID: "launch" or "spin"
-            }
+        => hair is { Sprite.LastAnimationID: "launch" or "spin" }
             || (hair.Entity is Player && hair.Sprite.EntityAs<Player>().Stamina <= Player.ClimbTiredThreshold);
 
     /// <summary>
@@ -453,8 +472,7 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the tail should be flipped; otherwise, <c>false</c>.</returns>
     public static bool shouldFlipTail(PlayerHair hair)
-        => hair is
-        {
+        => hair is {
             Sprite.LastAnimationID: "asleep" or "bagDown" or "edgeBack" or "halfWakeUp" or "sitDown" or "sleep"
             or "wakeUp"
         };
@@ -465,9 +483,7 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the tail should be laying on the ground; otherwise, <c>false</c>.</returns>
     public static bool shouldRestTail(PlayerHair hair)
-        => hair is
-        {
-            Sprite.LastAnimationID: "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
+        => hair is { Sprite.LastAnimationID: "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
             or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
         };
 
@@ -477,8 +493,7 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the tail should be stretched; otherwise, <c>false</c>.</returns>
     public static bool shouldStretchTail(PlayerHair hair)
-        => hair is
-            {
+        => hair is {
                 Sprite.LastAnimationID: "dangling" or "edge" or "edgeBack" or "idleC" or "runWind" or "shaking"
                 or "tired" or "tiredStill"
             }
@@ -508,20 +523,20 @@ public static class FoxelineHelpers
     public static bool isBadelineHair(PlayerHair hair)
         => hair.Entity is BadelineOldsite or BadelineDummy;
 
-
-
     /// <summary>
     /// Determines if the specified PlayerHair is a ghost hair.
     /// </summary>
     /// <param name="hair">The PlayerHair to check.</param>
     /// <returns>True if the PlayerHair is a ghost hair; otherwise, false.</returns>
-    public static bool isGhostHair(PlayerHair hair) {
-        if(isCnetInstalled())
+    public static bool isGhostHair(PlayerHair hair)
+    {
+        if (isCnetInstalled())
         {
             return _isGhostHair(hair);
         }
         return false;
     }
+
     /// <summary>
     /// Determines if the PlayerHair object belongs to a ghost entity
     /// Should not be inlined to avoid crash if CelesteNet binary is not loaded
@@ -537,7 +552,9 @@ public static class FoxelineHelpers
     /// </summary>
     /// <returns>True if CelesteNet.Client is installed; otherwise, false.</returns>
     public static bool isCnetInstalled()
-        => Everest.Loader.DependencyLoaded(new EverestModuleMetadata { Name = "CelesteNet.Client", Version = new Version(2, 3, 1) });
+        => Everest.Loader.DependencyLoaded(new EverestModuleMetadata {
+            Name = "CelesteNet.Client", Version = new Version(2, 3, 1)
+        });
 
     /// <summary>
     /// Determines if the hair should be changed based on the settings
@@ -545,5 +562,6 @@ public static class FoxelineHelpers
     /// <param name="self">The PlayerHair object</param>
     /// <returns>True if the hair should be changed</returns>
     public static bool shouldChangeHair(PlayerHair self)
-        => (isPlayerHair(self) && FoxelineModule.Settings.EnableBangs) || (isBadelineHair(self) && FoxelineModule.Settings.BadelineTail.EnableBangs);
+        => (isPlayerHair(self) && FoxelineModule.Settings.EnableBangs)
+            || (isBadelineHair(self) && FoxelineModule.Settings.BadelineTail.EnableBangs);
 }
