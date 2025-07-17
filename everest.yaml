@@ -3,7 +3,7 @@
   DLL: bin/Foxeline.dll
   Dependencies:
     - Name: EverestCore
-      Version: 1.4673.0
+      Version: 1.5635.0
   OptionalDependencies:
     - Name: CelesteNet.Client
       Version: 2.3.1
