@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
 using MonoMod.Utils;
-using Color = Microsoft.Xna.Framework.Color;
-
-using Celeste.Mod.CelesteNet.Client;
 using Celeste.Mod.CelesteNet.Client.Entities;
 using System.Runtime.CompilerServices;
-using System.Linq;
 
 namespace Celeste.Mod.Foxeline;
 
