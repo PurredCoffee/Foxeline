@@ -36,23 +36,6 @@ public static class TailNetHelper
 
 public static class FoxelineHelpers
 {
-    //instantiate the arrays once and keep them around to cut down on GC pressure
-    /// <summary>
-    ///   The order in which tails should be drawn, indexed by tail count.
-    /// </summary>
-    public static readonly int[][] tailDrawOrders = [
-        [], //no tails or invalid tail count
-        [0],
-        [1, 0],
-        [2, 0, 1],
-        [2, 1, 3, 0],
-        [4, 0, 3, 1, 2],
-        [5, 0, 3, 2, 4, 1],
-        [6, 0, 5, 1, 4, 2, 3],
-        [7, 0, 6, 1, 4, 3, 5, 2],
-        [8, 0, 7, 1, 6, 5, 2, 3, 4],
-    ];
-
     #region Settings helpers
 
     /// <summary>
@@ -223,8 +206,8 @@ public static class FoxelineHelpers
     /// <returns>Array of tail indices in the order they should be drawn</returns>
     public static int[] getTailOrder(int tailCount)
         => tailCount is >= 0 and <= 9
-            ? tailDrawOrders[tailCount]
-            : tailDrawOrders[0];
+            ? FoxelineConst.tailDrawOrders[tailCount]
+            : FoxelineConst.tailDrawOrders[0];
 
     /// <summary>
     /// Determines if the hair should be changed based on the settings
