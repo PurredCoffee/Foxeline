@@ -355,7 +355,7 @@ public static class FoxelineHelpers
     #endregion
 
     /// <summary>
-    /// Clamps the tail piece into reach of the previous tail piece
+    /// Clamps the tail node into reach of the previous tail node
     /// </summary>
     /// <param name="tailPositions">List of tail positions to edit</param>
     /// <param name="i">Tail index</param>
@@ -421,7 +421,7 @@ public static class FoxelineHelpers
         int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
         for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
         {
-            //we select the current tail piece. tailID is currently baked and chosen to be pretty
+            //we select the current tail node. tailID is currently baked and chosen to be pretty
             MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
 
             //we calculate the position of the texture by offsetting it by half its size

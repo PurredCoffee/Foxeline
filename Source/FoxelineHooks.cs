@@ -141,7 +141,7 @@ public static class FoxelineHooks
                         tailDir.X *= -1;
                     }
 
-                    //we clamp the tail piece into reach for the other tail piece as it has moved
+                    //we clamp the tail node into reach for the other tail node as it has moved
                     FoxelineHelpers.clampTail(tailPositions[o], i, tailScale);
 
                     //the position each part of the tail want to reach
@@ -178,7 +178,7 @@ public static class FoxelineHooks
                         / (1 - FoxelineModule.Settings.FoxelineConstants.Speed / 100f);
                 }
 
-                //we clamp the tail piece into reach for the other tail piece as the current tail has moved
+                //we clamp the tail node into reach for the other tail node as the current tail has moved
                 FoxelineHelpers.clampTail(tailPositions[o], i, tailScale);
             }
                 

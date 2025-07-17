@@ -12,11 +12,11 @@ public class FoxelineModule : EverestModule
     Foxeline Documentation
 
     The general process is very shrimple:
-    1. We create a list of tail positions and velocities for each tail piece
+    1. We create a list of tail positions and velocities for each tail node
     2. We update the tail positions based on the previous tail position and the direction the tail should go in
     3. We clamp the tail positions to make sure the tail doesn't stretch too far
     4. We turn the tail positions into offsets for rendering
-    5. We draw different sphere-esque textures for each tail piece during PlayerHair:on_render
+    5. We draw different sphere-esque textures for each tail node during PlayerHair:on_render
     */
 
     public static FoxelineModule Instance { get; private set; }
