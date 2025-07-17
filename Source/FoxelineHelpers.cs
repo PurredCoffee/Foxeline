@@ -36,6 +36,25 @@ public static class TailNetHelper
 
 public static class FoxelineHelpers
 {
+    //instantiate the arrays once and keep them around to cut down on GC pressure
+    /// <summary>
+    ///   The order in which tails should be drawn, indexed by tail count.
+    /// </summary>
+    public static readonly int[][] tailDrawOrders = [
+        [], //no tails or invalid tail count
+        [0],
+        [1, 0],
+        [2, 0, 1],
+        [2, 1, 3, 0],
+        [4, 0, 3, 1, 2],
+        [5, 0, 3, 2, 4, 1],
+        [6, 0, 5, 1, 4, 2, 3],
+        [7, 0, 6, 1, 4, 3, 5, 2],
+        [8, 0, 7, 1, 6, 5, 2, 3, 4],
+    ];
+
+    #region Settings helpers
+
     /// <summary>
     /// Gets the tail variant for the player based on the settings
     /// </summary>
@@ -190,22 +209,12 @@ public static class FoxelineHelpers
         return FoxelineModule.Settings.CelestenetDefaults.FeatherTail;
     }
 
-    //instantiate the arrays once and keep them around to cut down on GC pressure
     /// <summary>
-    ///   The order in which tails should be drawn, indexed by tail count.
+    /// Whether the tail scale is greater than 1 and the big tail node textures should be used.
     /// </summary>
-    private static readonly int[][] tailDrawOrders = [
-        [], //no tails or invalid tail count
-        [0],
-        [1, 0],
-        [2, 0, 1],
-        [2, 1, 3, 0],
-        [4, 0, 3, 1, 2],
-        [5, 0, 3, 2, 4, 1],
-        [6, 0, 5, 1, 4, 2, 3],
-        [7, 0, 6, 1, 4, 3, 5, 2],
-        [8, 0, 7, 1, 6, 5, 2, 3, 4],
-    ];
+    /// <param name="self">The PlayerHair object to draw the tail next to</param>
+    public static bool isBigTail(PlayerHair self)
+        => getTailScale(self) > 1;
 
     /// <summary>
     /// Gets the order in which the tails should be drawn
@@ -213,7 +222,130 @@ public static class FoxelineHelpers
     /// <param name="tailCount">Number of tails</param>
     /// <returns>Array of tail indices in the order they should be drawn</returns>
     public static int[] getTailOrder(int tailCount)
-        => tailCount is >= 0 and <= 9 ? tailDrawOrders[tailCount] : tailDrawOrders[0];
+        => tailCount is >= 0 and <= 9
+            ? tailDrawOrders[tailCount]
+            : tailDrawOrders[0];
+
+    /// <summary>
+    /// Determines if the hair should be changed based on the settings
+    /// </summary>
+    /// <param name="self">The PlayerHair object</param>
+    /// <returns>True if the hair should be changed</returns>
+    public static bool shouldChangeHair(PlayerHair self)
+        => (isPlayerHair(self) && FoxelineModule.Settings.EnableBangs)
+            || (isBadelineHair(self) && FoxelineModule.Settings.BadelineTail.EnableBangs);
+
+    #endregion
+
+    #region Animation helpers
+
+    /// <summary>
+    /// Determines whether the player hair is crouched.
+    /// </summary>
+    /// <param name="hair">The player hair.</param>
+    /// <returns><c>true</c> if the player hair is crouched; otherwise, <c>false</c>.</returns>
+    public static bool isCrouched(PlayerHair hair)
+        => hair is { Sprite.LastAnimationID: "duck" or "slide" or "hug" };
+
+    /// <summary>
+    /// Determines whether the player's hair should droop the tail.
+    /// </summary>
+    /// <param name="hair">The player's hair.</param>
+    /// <returns><c>true</c> if the hair should droop the tail; otherwise, <c>false</c>.</returns>
+    public static bool shouldDroopTail(PlayerHair hair)
+        => hair is { Sprite.LastAnimationID: "launch" or "spin" }
+            || (hair.Entity is Player && hair.Sprite.EntityAs<Player>().Stamina <= Player.ClimbTiredThreshold);
+
+    /// <summary>
+    /// Determines whether the tail should be flipped based on the current animation ID of the player's hair.
+    /// </summary>
+    /// <param name="hair">The player's hair.</param>
+    /// <returns><c>true</c> if the tail should be flipped; otherwise, <c>false</c>.</returns>
+    public static bool shouldFlipTail(PlayerHair hair)
+        => hair is {
+            Sprite.LastAnimationID: "asleep" or "bagDown" or "edgeBack" or "halfWakeUp" or "sitDown" or "sleep"
+            or "wakeUp"
+        };
+
+    /// <summary>
+    /// Determines whether the tail should be laying on the ground based on the current animation ID of the player's hair.
+    /// </summary>
+    /// <param name="hair">The player's hair.</param>
+    /// <returns><c>true</c> if the tail should be laying on the ground; otherwise, <c>false</c>.</returns>
+    public static bool shouldRestTail(PlayerHair hair)
+        => hair is {
+            Sprite.LastAnimationID: "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
+            or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
+        };
+
+    /// <summary>
+    /// Determines whether the tail of the player's hair should be stretched.
+    /// </summary>
+    /// <param name="hair">The player's hair.</param>
+    /// <returns><c>true</c> if the tail should be stretched; otherwise, <c>false</c>.</returns>
+    public static bool shouldStretchTail(PlayerHair hair)
+        => hair is {
+                Sprite.LastAnimationID: "dangling" or "edge" or "edgeBack" or "idleC" or "runWind" or "shaking"
+                or "tired" or "tiredStill"
+            }
+            || isCrouched(hair);
+
+    #endregion
+
+    #region General helpers
+
+    /// <summary>
+    /// Determines if the specified <paramref name="hair"/> belongs to the correct tail owner.
+    /// </summary>
+    /// <param name="hair">The hair to check.</param>
+    /// <returns><c>true</c> if the hair belongs to the correct tail owner; otherwise, <c>false</c>.</returns>
+    public static bool correctTailOwner(PlayerHair hair)
+        => isPlayerHair(hair) || isBadelineHair(hair) || isGhostHair(hair);
+
+    /// <summary>
+    /// Checks if the specified <see cref="PlayerHair"/> belongs to a player entity.
+    /// </summary>
+    /// <param name="hair">The <see cref="PlayerHair"/> to check.</param>
+    /// <returns><c>true</c> if the hair belongs to a player entity; otherwise, <c>false</c>.</returns>
+    public static bool isPlayerHair(PlayerHair hair)
+        => hair.Entity is Player;
+
+    /// <summary>
+    /// Determines whether the specified player hair is Badeline's hair.
+    /// </summary>
+    /// <param name="hair">The player hair to check.</param>
+    /// <returns><c>true</c> if the player hair is Badeline's hair; otherwise, <c>false</c>.</returns>
+    public static bool isBadelineHair(PlayerHair hair)
+        => hair.Entity is BadelineOldsite or BadelineDummy;
+
+    /// <summary>
+    /// Determines if the specified PlayerHair is a ghost hair.
+    /// </summary>
+    /// <param name="hair">The PlayerHair to check.</param>
+    /// <returns>True if the PlayerHair is a ghost hair; otherwise, false.</returns>
+    public static bool isGhostHair(PlayerHair hair)
+        => isCnetInstalled() && _isGhostHair(hair);
+
+    /// <summary>
+    /// Determines if the PlayerHair object belongs to a ghost entity
+    /// Should not be inlined to avoid crash if CelesteNet binary is not loaded
+    /// </summary>
+    /// <param name="hair">The PlayerHair object</param>
+    /// <returns>True if the PlayerHair object belongs to a ghost entity</returns>
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static bool _isGhostHair(PlayerHair hair)
+        => hair.Entity is Ghost;
+
+    /// <summary>
+    /// Checks if CelesteNet.Client is installed.
+    /// </summary>
+    /// <returns>True if CelesteNet.Client is installed; otherwise, false.</returns>
+    public static bool isCnetInstalled()
+        => Everest.Loader.DependencyLoaded(new EverestModuleMetadata {
+            Name = "CelesteNet.Client", Version = new Version(2, 3, 1)
+        });
+
+    #endregion
 
     /// <summary>
     /// Clamps the tail piece into reach of the previous tail piece
@@ -297,13 +429,6 @@ public static class FoxelineHelpers
     }
 
     /// <summary>
-    /// Whether the tail scale is greater than 1 and the big tail node textures should be used.
-    /// </summary>
-    /// <param name="self">The PlayerHair object to draw the tail next to</param>
-    public static bool isBigTail(PlayerHair self)
-        => getTailScale(self) > 1;
-
-    /// <summary>
     /// Draws the tail and outline of the player based on the tail positions defined under selfData and the hair offset
     /// </summary>
     /// <param name="self">The PlayerHair object</param>
@@ -333,9 +458,7 @@ public static class FoxelineHelpers
 
     public static void drawTailPositions(PlayerHair self, DynamicData selfData)
     {
-        List<List<Vector2>> tailPositions = selfData.Get<List<List<Vector2>>>(FoxelineConst.TailPositions);
-
-        foreach (List<Vector2> pos in tailPositions)
+        foreach (List<Vector2> pos in selfData.Get<List<List<Vector2>>>(FoxelineConst.TailPositions))
             Draw.Point(pos[0], Color.Cyan);
     }
 
@@ -401,115 +524,4 @@ public static class FoxelineHelpers
             _ => self.GetHairColor(hairNodeIndex)
         };
     }
-
-    /// <summary>
-    /// Determines whether the player hair is crouched.
-    /// </summary>
-    /// <param name="hair">The player hair.</param>
-    /// <returns><c>true</c> if the player hair is crouched; otherwise, <c>false</c>.</returns>
-    public static bool isCrouched(PlayerHair hair)
-        => hair is { Sprite.LastAnimationID: "duck" or "slide" or "hug" };
-
-    /// <summary>
-    /// Determines whether the player's hair should droop the tail.
-    /// </summary>
-    /// <param name="hair">The player's hair.</param>
-    /// <returns><c>true</c> if the hair should droop the tail; otherwise, <c>false</c>.</returns>
-    public static bool shouldDroopTail(PlayerHair hair)
-        => hair is { Sprite.LastAnimationID: "launch" or "spin" }
-            || (hair.Entity is Player && hair.Sprite.EntityAs<Player>().Stamina <= Player.ClimbTiredThreshold);
-
-    /// <summary>
-    /// Determines whether the tail should be flipped based on the current animation ID of the player's hair.
-    /// </summary>
-    /// <param name="hair">The player's hair.</param>
-    /// <returns><c>true</c> if the tail should be flipped; otherwise, <c>false</c>.</returns>
-    public static bool shouldFlipTail(PlayerHair hair)
-        => hair is {
-            Sprite.LastAnimationID: "asleep" or "bagDown" or "edgeBack" or "halfWakeUp" or "sitDown" or "sleep"
-            or "wakeUp"
-        };
-
-    /// <summary>
-    /// Determines whether the tail should be laying on the ground based on the current animation ID of the player's hair.
-    /// </summary>
-    /// <param name="hair">The player's hair.</param>
-    /// <returns><c>true</c> if the tail should be laying on the ground; otherwise, <c>false</c>.</returns>
-    public static bool shouldRestTail(PlayerHair hair)
-        => hair is {
-            Sprite.LastAnimationID: "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
-            or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
-        };
-
-    /// <summary>
-    /// Determines whether the tail of the player's hair should be stretched.
-    /// </summary>
-    /// <param name="hair">The player's hair.</param>
-    /// <returns><c>true</c> if the tail should be stretched; otherwise, <c>false</c>.</returns>
-    public static bool shouldStretchTail(PlayerHair hair)
-        => hair is {
-                Sprite.LastAnimationID: "dangling" or "edge" or "edgeBack" or "idleC" or "runWind" or "shaking"
-                or "tired" or "tiredStill"
-            }
-            || isCrouched(hair);
-
-    /// <summary>
-    /// Determines if the specified <paramref name="hair"/> belongs to the correct tail owner.
-    /// </summary>
-    /// <param name="hair">The hair to check.</param>
-    /// <returns><c>true</c> if the hair belongs to the correct tail owner; otherwise, <c>false</c>.</returns>
-    public static bool correctTailOwner(PlayerHair hair)
-        => isPlayerHair(hair) || isBadelineHair(hair) || isGhostHair(hair);
-
-    /// <summary>
-    /// Checks if the specified <see cref="PlayerHair"/> belongs to a player entity.
-    /// </summary>
-    /// <param name="hair">The <see cref="PlayerHair"/> to check.</param>
-    /// <returns><c>true</c> if the hair belongs to a player entity; otherwise, <c>false</c>.</returns>
-    public static bool isPlayerHair(PlayerHair hair)
-        => hair.Entity is Player;
-
-    /// <summary>
-    /// Determines whether the specified player hair is Badeline's hair.
-    /// </summary>
-    /// <param name="hair">The player hair to check.</param>
-    /// <returns><c>true</c> if the player hair is Badeline's hair; otherwise, <c>false</c>.</returns>
-    public static bool isBadelineHair(PlayerHair hair)
-        => hair.Entity is BadelineOldsite or BadelineDummy;
-
-    /// <summary>
-    /// Determines if the specified PlayerHair is a ghost hair.
-    /// </summary>
-    /// <param name="hair">The PlayerHair to check.</param>
-    /// <returns>True if the PlayerHair is a ghost hair; otherwise, false.</returns>
-    public static bool isGhostHair(PlayerHair hair)
-        => isCnetInstalled() && _isGhostHair(hair);
-
-    /// <summary>
-    /// Determines if the PlayerHair object belongs to a ghost entity
-    /// Should not be inlined to avoid crash if CelesteNet binary is not loaded
-    /// </summary>
-    /// <param name="hair">The PlayerHair object</param>
-    /// <returns>True if the PlayerHair object belongs to a ghost entity</returns>
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static bool _isGhostHair(PlayerHair hair)
-        => hair.Entity is Ghost;
-
-    /// <summary>
-    /// Checks if CelesteNet.Client is installed.
-    /// </summary>
-    /// <returns>True if CelesteNet.Client is installed; otherwise, false.</returns>
-    public static bool isCnetInstalled()
-        => Everest.Loader.DependencyLoaded(new EverestModuleMetadata {
-            Name = "CelesteNet.Client", Version = new Version(2, 3, 1)
-        });
-
-    /// <summary>
-    /// Determines if the hair should be changed based on the settings
-    /// </summary>
-    /// <param name="self">The PlayerHair object</param>
-    /// <returns>True if the hair should be changed</returns>
-    public static bool shouldChangeHair(PlayerHair self)
-        => (isPlayerHair(self) && FoxelineModule.Settings.EnableBangs)
-            || (isBadelineHair(self) && FoxelineModule.Settings.BadelineTail.EnableBangs);
 }
