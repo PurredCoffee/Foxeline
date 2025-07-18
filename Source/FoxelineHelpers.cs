@@ -297,6 +297,35 @@ public static class FoxelineHelpers
     public static List<List<Vector2>> getAllTailVelocities(DynamicData selfData)
         => selfData.Get<List<List<Vector2>>>(FoxelineConst.Velocity);
 
+    internal static void ensureTailDataInitialized(DynamicData selfData, int tailCount)
+    {
+        List<List<Vector2>> allPositions = getAllTailPositions(selfData);
+        int tailsToAdd = tailCount - allPositions.Count;
+
+        if (tailsToAdd <= 0)
+            return;
+
+        //we only need these when we know we need to add new tail data lists
+        List<List<Vector2>> allOffsets = getAllTailOffsets(selfData);
+        List<List<Vector2>> allVelocities = getAllTailVelocities(selfData);
+
+        for (int iTail = 0; iTail < tailsToAdd; iTail++)
+        {
+            List<Vector2> positions = [];
+            List<Vector2> offsets = [];
+            List<Vector2> velocities = [];
+            for (int iTailNode = 0; iTailNode < FoxelineConst.tailLen; iTailNode++)
+            {
+                positions.Add(Vector2.Zero);
+                velocities.Add(Vector2.Zero);
+                offsets.Add(Vector2.Zero);
+            }
+            allPositions.Add(positions);
+            allOffsets.Add(offsets);
+            allVelocities.Add(velocities);
+        }
+    }
+
     #endregion
 
     #region General helpers
@@ -385,26 +414,32 @@ public static class FoxelineHelpers
     {
         List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
         int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
+
+        //fill in the hair gradient
         Color[] gradient = new Color[self.Sprite.HairCount];
+        for (int iHairNode = 0; iHairNode < self.Sprite.HairCount; iHairNode++)
+            gradient[iHairNode] = getHairColor(iHairNode, self, selfData);
 
-        for (int i = 0; i < self.Sprite.HairCount; i++)
-            gradient[i] = getHairColor(i, self, selfData);
-
-        for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
+        for (int iTailNode = FoxelineConst.tailLen - 1; iTailNode >= 0; iTailNode--)
         {
-            MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
-            bool fill = ((i < FoxelineConst.tailLen * (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f) == getPaintBrushTail(self));
-            //fill color is either the hair color or a blend of the hair color at the tip of the tail and the base of the tail (sometimes visible)
-            float lerp = Math.Min((float)i / FoxelineConst.tailLen, 1) * self.Sprite.HairCount;
+            float tailSoftness = (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f;
+            bool fill = iTailNode < FoxelineConst.tailLen * tailSoftness == getPaintBrushTail(self);
+
+            //fill color is either the hair color or a blend of the hair color at the tip of the tail
+            //and the base of the tail (sometimes visible)
+            float lerp = Math.Min((float)iTailNode / FoxelineConst.tailLen, 1) * self.Sprite.HairCount;
             int hairNodeIndex = (int)lerp;
             int nextHairNodeIndex = Math.Min(hairNodeIndex + 1, self.Sprite.HairCount - 1);
             Color fullColor = Color.Lerp(gradient[hairNodeIndex], gradient[nextHairNodeIndex], lerp % 1);
             Color color = fill
                 ? fullColor
                 : Color.Lerp(getTailBrushColor(self), fullColor, getTailBrushTint(self));
-            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][i].Floor();
+
+            MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[iTailNode]];
+            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][iTailNode].Floor();
             Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
             float scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
+
             tex.Draw(position, center, color, scale);
         }
     }
@@ -419,13 +454,13 @@ public static class FoxelineHelpers
     {
         List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
         int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
-        for (int i = FoxelineConst.tailLen - 1; i >= 0; i--)
+        for (int iTailNode = FoxelineConst.tailLen - 1; iTailNode >= 0; iTailNode--)
         {
             //we select the current tail node. tailID is currently baked and chosen to be pretty
-            MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[i]];
+            MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[iTailNode]];
 
             //we calculate the position of the texture by offsetting it by half its size
-            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][i].Floor();
+            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][iTailNode].Floor();
             Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
             float scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
 
@@ -448,6 +483,7 @@ public static class FoxelineHelpers
 
         int tailCount = Math.Min(getTailCount(self), getAllTailOffsets(selfData).Count);
         int[] drawOrder = getTailOrder(tailCount);
+
         if (!getSeparateTails(self))
         {
             foreach (int tailIndex in drawOrder)
@@ -492,7 +528,6 @@ public static class FoxelineHelpers
         //if there's no animation id in the lookup, just do the default
         if (!cutsceneToDashLookup.TryGetValue(self.Sprite.LastAnimationID, out var dashes))
             return self.GetHairColor(hairNodeIndex);
-
 
         //SMH PLUS
         if (selfData.TryGet(FoxelineConst.smh_hairConfig, out var hairConfig))
