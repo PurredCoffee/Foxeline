@@ -8,32 +8,6 @@ using System.Runtime.CompilerServices;
 
 namespace Celeste.Mod.Foxeline;
 
-public static class TailNetHelper
-{
-    public static bool TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail)
-    {
-        if (FoxelineHelpers.isCnetInstalled() && _TryGetTailInformation(hair, out tail))
-            return true;
-
-        tail = null;
-        return false;
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static bool _TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail)
-    {
-        if (hair.Entity is Ghost ghost && CelesteNet.TailComponent.TailInformation.TryGetValue(
-            ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults tailInfo))
-        {
-            tail = tailInfo;
-            return true;
-        }
-
-        tail = null;
-        return false;
-    }
-}
-
 public static class FoxelineHelpers
 {
     #region Settings helpers
@@ -49,7 +23,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.Tail;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.Tail;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.Tail;
 
         return FoxelineModule.Settings.CelestenetDefaults.Tail;
@@ -66,7 +40,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.TailScale / 100f;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.TailScale / 100f;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.TailScale / 100f;
 
         return FoxelineModule.Settings.CelestenetDefaults.TailScale / 100f;
@@ -83,7 +57,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.TailCount;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.TailCount;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.TailCount;
 
         return FoxelineModule.Settings.CelestenetDefaults.TailCount;
@@ -100,7 +74,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.SeparateTails;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.SeparateTails;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.SeparateTails;
 
         return FoxelineModule.Settings.CelestenetDefaults.SeparateTails;
@@ -117,7 +91,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.TailSpread / 100f;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.TailSpread / 100f;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.TailSpread / 100f;
 
         return FoxelineModule.Settings.CelestenetDefaults.TailSpread / 100f;
@@ -134,7 +108,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.PaintBrushTail;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.PaintBrushTail;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.PaintBrushTail;
 
         return FoxelineModule.Settings.CelestenetDefaults.PaintBrushTail;
@@ -151,7 +125,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.TailBrushTint / 100f;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.TailBrushTint / 100f;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.TailBrushTint / 100f;
 
         return FoxelineModule.Settings.CelestenetDefaults.TailBrushTint / 100f;
@@ -168,7 +142,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.TailBrushColor;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.TailBrushColor;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.TailBrushColor;
 
         return FoxelineModule.Settings.CelestenetDefaults.TailBrushColor;
@@ -185,7 +159,7 @@ public static class FoxelineHelpers
             return FoxelineModule.Settings.FeatherTail;
         if (isBadelineHair(self))
             return FoxelineModule.Settings.BadelineTail.FeatherTail;
-        if (TailNetHelper.TryGetTailInformation(self, out var tail))
+        if (CelesteNetHelper.TryGetTailInformation(self, out var tail))
             return tail.FeatherTail;
 
         return FoxelineModule.Settings.CelestenetDefaults.FeatherTail;
