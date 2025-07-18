@@ -116,7 +116,7 @@ public static class FoxelineHooks
 
                         float targetSwayX = normalizedTailNode * swayAmplitude * MathF.Sin(t - swayOffsetPerNode);
 
-                        tailDir = new Vector2(1, targetSwayX);
+                        tailDir = new Vector2(targetSwayX, 1);
                     }
 
                     //are we in an animation which should turn the tail the other direction?
