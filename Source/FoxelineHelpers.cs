@@ -397,7 +397,7 @@ public static class FoxelineHelpers
         for (int iTailNode = FoxelineConst.tailLen - 1; iTailNode >= 0; iTailNode--)
         {
             float tailSoftness = (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f;
-            bool fill = iTailNode < FoxelineConst.tailLen * tailSoftness == getPaintBrushTail(self);
+            bool fill = iTailNode < FoxelineConst.tailLen * tailSoftness != getPaintBrushTail(self);
 
             //fill color is either the hair color or a blend of the hair color at the tip of the tail
             //and the base of the tail (sometimes visible)
