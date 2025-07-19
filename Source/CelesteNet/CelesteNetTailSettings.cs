@@ -10,9 +10,9 @@ namespace Celeste.Mod.Foxeline.CelesteNet;
 /// <summary>
 /// Packet containing players' Foxeline tail settings.
 /// </summary>
-public class CelesteNetTailData : DataType<CelesteNetTailData>
+public class CelesteNetTailSettings : DataType<CelesteNetTailSettings>
 {
-    static CelesteNetTailData()
+    static CelesteNetTailSettings()
     {
         //the unversioned packet didn't have this set; which means the packet id was an empty string
         //turns out that that's a happy accident, since now i don't have to worry about backwards compatibility
@@ -35,11 +35,11 @@ public class CelesteNetTailData : DataType<CelesteNetTailData>
 
     //this empty constructor is necessary - when receiving a packet, the parameterless .ctor() is dynamically invoked
     //and then its Read() is called
-    public CelesteNetTailData()
+    public CelesteNetTailSettings()
     {
     }
 
-    public CelesteNetTailData(DataPlayerInfo player)
+    public CelesteNetTailSettings(DataPlayerInfo player)
     {
         Player = player;
         TailInformation = new FoxelineModuleSettings.TailDefaults {

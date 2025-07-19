@@ -17,7 +17,7 @@ public static class CelesteNetHelper
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static bool _TryGetTailInformation(PlayerHair hair, out FoxelineModuleSettings.TailDefaults tail)
     {
-        if (hair.Entity is Ghost ghost && CelesteNet.CelesteNetTailDataExchangeComponent.TailInformation.TryGetValue(
+        if (hair.Entity is Ghost ghost && CelesteNet.CelesteNetTailSettingsExchangeComponent.TailInformation.TryGetValue(
             ghost.PlayerInfo.ID, out FoxelineModuleSettings.TailDefaults tailInfo))
         {
             tail = tailInfo;

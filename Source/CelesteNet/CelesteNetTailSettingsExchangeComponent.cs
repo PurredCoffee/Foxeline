@@ -7,9 +7,9 @@ using Celeste.Mod.CelesteNet;
 namespace Celeste.Mod.Foxeline.CelesteNet;
 
 /// <summary>
-///   A <see cref="CelesteNetGameComponent"/> which handles <see cref="CelesteNetTailData"/> packets.<br/>
+///   A <see cref="CelesteNetGameComponent"/> which handles <see cref="CelesteNetTailSettings"/> packets.<br/>
 /// </summary>
-public class CelesteNetTailDataExchangeComponent : CelesteNetGameComponent
+public class CelesteNetTailSettingsExchangeComponent : CelesteNetGameComponent
 {
     /*
      * here's how CelesteNet interoperability works
@@ -34,7 +34,7 @@ public class CelesteNetTailDataExchangeComponent : CelesteNetGameComponent
     public static Dictionary<uint, FoxelineModuleSettings.TailDefaults> TailInformation = [];
 
     //instantiated when flipping the Connected toggle
-    public CelesteNetTailDataExchangeComponent(CelesteNetClientContext context, Game game) : base(context, game)
+    public CelesteNetTailSettingsExchangeComponent(CelesteNetClientContext context, Game game) : base(context, game)
     {
         ctx = context;
     }
@@ -43,19 +43,19 @@ public class CelesteNetTailDataExchangeComponent : CelesteNetGameComponent
     public void Handle(CelesteNetConnection con, DataReady data)
     {
         if (ctx.Client?.PlayerInfo != null)
-            ctx.Client.Send(new CelesteNetTailData(ctx.Client.PlayerInfo));
+            ctx.Client.Send(new CelesteNetTailSettings(ctx.Client.PlayerInfo));
     }
 
     public void SendTailData()
     {
         if (ctx.Client?.PlayerInfo != null)
-            ctx.Client.Send(new CelesteNetTailData(ctx.Client.PlayerInfo));
+            ctx.Client.Send(new CelesteNetTailSettings(ctx.Client.PlayerInfo));
     }
 
-    //called when receiving a CelesteNetTailData, which is only sent when the player connects right now
-    public void Handle(CelesteNetConnection con, CelesteNetTailData data)
+    //called when receiving a CelesteNetTailSettings, which is only sent when the player connects right now
+    public void Handle(CelesteNetConnection con, CelesteNetTailSettings settings)
     {
-        if (data.Player != null)
-            TailInformation[data.Player.ID] = data.TailInformation;
+        if (settings.Player != null)
+            TailInformation[settings.Player.ID] = settings.TailInformation;
     }
 }
