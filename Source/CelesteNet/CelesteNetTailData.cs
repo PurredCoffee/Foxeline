@@ -7,6 +7,9 @@ namespace Celeste.Mod.Foxeline.CelesteNet;
 
 #region Versioned packet
 
+/// <summary>
+/// Packet containing players' Foxeline tail settings.
+/// </summary>
 public class CelesteNetTailData : DataType<CelesteNetTailData>
 {
     static CelesteNetTailData()
@@ -30,6 +33,8 @@ public class CelesteNetTailData : DataType<CelesteNetTailData>
     public DataPlayerInfo Player;
     public FoxelineModuleSettings.TailDefaults TailInformation;
 
+    //this empty constructor is necessary - when receiving a packet, the parameterless .ctor() is dynamically invoked
+    //and then its Read() is called
     public CelesteNetTailData()
     {
     }
@@ -50,9 +55,11 @@ public class CelesteNetTailData : DataType<CelesteNetTailData>
         };
     }
 
+    //false if the packet should be ignored, true otherwise
     public override bool FilterHandle(DataContext ctx)
         => Player != null;
 
+    //i. i genuinely am not sure what the meta methods do
     public override MetaType[] GenerateMeta(DataContext ctx) => [
         new MetaPlayerPrivateState(Player),
         new MetaBoundRef(DataType<DataPlayerInfo>.DataID, Player?.ID ?? uint.MaxValue, true),
@@ -66,6 +73,7 @@ public class CelesteNetTailData : DataType<CelesteNetTailData>
 
     private static bool HasReceivedUnrecognizedPacket;
 
+    //called from CelesteNet when this packet is received
     protected override void Read(CelesteNetBinaryReader reader)
     {
         PacketVersion = reader.ReadUInt16();
@@ -112,6 +120,7 @@ public class CelesteNetTailData : DataType<CelesteNetTailData>
 
     #endregion
 
+    //called from CelesteNet when this packet is sent
     protected override void Write(CelesteNetBinaryWriter writer)
     {
         writer.Write(LatestPacketVersion);
