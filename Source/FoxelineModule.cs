@@ -67,8 +67,8 @@ public class FoxelineModule : EverestModule
         tailtex = new List<MTexture>[FoxelineConst.Variants * 2];
         for (int variant = 0; variant < FoxelineConst.Variants; variant++)
         {
-            tailtex[variant] = GFX.Game.GetAtlasSubtextures("Foxeline/tail/variant_" + variant + "/tail");
-            tailtex[variant + FoxelineConst.Variants] = GFX.Game.GetAtlasSubtextures("Foxeline/tail/variant_" + variant + "/tail_resize");
+            tailtex[variant] = GFX.Game.GetAtlasSubtextures($"Foxeline/tail/variant_{variant}/tail");
+            tailtex[variant + FoxelineConst.Variants] = GFX.Game.GetAtlasSubtextures($"Foxeline/tail/variant_{variant}/tail_resize");
         }
         bangs = GFX.Game.GetAtlasSubtextures("Foxeline/bangs/bangs");
     }
