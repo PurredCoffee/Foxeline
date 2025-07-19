@@ -7,9 +7,9 @@ namespace Celeste.Mod.Foxeline.CelesteNet;
 
 #region Versioned packet
 
-public class TailData : DataType<TailData>
+public class CelesteNetTailData : DataType<CelesteNetTailData>
 {
-    static TailData()
+    static CelesteNetTailData()
     {
         //the unversioned packet didn't have this set; which means the packet id was an empty string
         //turns out that that's a happy accident, since now i don't have to worry about backwards compatibility
@@ -30,9 +30,12 @@ public class TailData : DataType<TailData>
     public DataPlayerInfo Player;
     public FoxelineModuleSettings.TailDefaults TailInformation;
 
-    public TailData() {}
+    public CelesteNetTailData()
+    {
+    }
 
-    public TailData(DataPlayerInfo player) {
+    public CelesteNetTailData(DataPlayerInfo player)
+    {
         Player = player;
         TailInformation = new FoxelineModuleSettings.TailDefaults {
             SeparateTails = FoxelineModule.Settings.SeparateTails,
@@ -55,7 +58,8 @@ public class TailData : DataType<TailData>
         new MetaBoundRef(DataType<DataPlayerInfo>.DataID, Player?.ID ?? uint.MaxValue, true),
     ];
 
-    public override void FixupMeta(DataContext ctx) {
+    public override void FixupMeta(DataContext ctx)
+    {
         Player = Get<MetaPlayerPrivateState>(ctx);
         Get<MetaBoundRef>(ctx).ID = Player?.ID ?? uint.MaxValue;
     }
@@ -108,7 +112,8 @@ public class TailData : DataType<TailData>
 
     #endregion
 
-    protected override void Write(CelesteNetBinaryWriter writer) {
+    protected override void Write(CelesteNetBinaryWriter writer)
+    {
         writer.Write(LatestPacketVersion);
         writer.Write(TailInformation.SeparateTails);
         writer.Write((byte)TailInformation.Tail);
@@ -120,7 +125,6 @@ public class TailData : DataType<TailData>
         writer.Write(TailInformation.FeatherTail);
         writer.Write(TailInformation.PaintBrushTail);
     }
-
 }
 
 #endregion
