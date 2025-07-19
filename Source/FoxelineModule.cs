@@ -24,9 +24,6 @@ public class FoxelineModule : EverestModule
     public override Type SettingsType => typeof(FoxelineModuleSettings);
     public static FoxelineModuleSettings Settings => (FoxelineModuleSettings)Instance._Settings;
 
-    public override Type SessionType => typeof(FoxelineModuleSession);
-    public static FoxelineModuleSession Session => (FoxelineModuleSession)Instance._Session;
-
 
     public FoxelineModule()
     {
