@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using MonoMod.Utils;
 using Celeste.Mod.CelesteNet.Client.Entities;
 using System.Runtime.CompilerServices;
+using Monocle;
 
 namespace Celeste.Mod.Foxeline;
 
@@ -292,6 +293,8 @@ public static class FoxelineHelpers
 
     #endregion
 
+    #region Color helpers
+
     /// <summary>
     /// Computes the smarter hair gradient.
     /// </summary>
@@ -381,5 +384,27 @@ public static class FoxelineHelpers
             2 => Player.TwoDashesHairColor,
             _ => self.GetHairColor(hairNodeIndex)
         };
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Gets the position the tails will grow out of, based on the player animation.
+    /// </summary>
+    /// <param name="self">
+    /// The <see cref="PlayerHair"/> object.
+    /// </param>
+    /// <returns>
+    /// The tail base position based on the player animation.
+    /// </returns>
+    public static Vector2 getTailBasePosition(PlayerHair self)
+    {
+        if (FoxelineConst.customTailPositions.TryGetValue(self.Sprite.LastAnimationID, out Vector2 offset))
+            //use custom tail center
+            return offset;
+
+        offset = new Vector2(shouldDroopTail(self) ? 0 : -2, isCrouched(self) ? 3 : 6);
+        offset.X += MathF.Sin(Engine.FrameCounter / 30f) / 2f;
+        return offset;
     }
 }

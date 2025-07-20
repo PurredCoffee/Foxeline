@@ -22,7 +22,6 @@ public static class FoxelineHooks
         TailCollection tails = TailCollection.GetOrCreate(self, selfData);
         float tailScale = FoxelineHelpers.getTailScale(self);
 
-        bool crouched = FoxelineHelpers.isCrouched(self);
         bool droopTail = FoxelineHelpers.shouldDroopTail(self);
         bool flipTail = FoxelineHelpers.shouldFlipTail(self);
         bool restTail = FoxelineHelpers.shouldRestTail(self);
@@ -44,20 +43,15 @@ public static class FoxelineHooks
         //the current direction the player is looking in
         Vector2 faceDirection = new((float)self.Facing, flipped);
 
-        //the position the tail will grow out of
-        //if in animation, use custom tail center
-        if (!FoxelineConst.customTailPositions.TryGetValue(self.Sprite.LastAnimationID, out Vector2 offset))
-        {
-            offset = new Vector2(droopTail ? 0 : -2, crouched ? 3 : 6);
-            offset.X += MathF.Sin(Engine.FrameCounter / 30f) / 2f;
-        }
+        //the position the tails will grow out of
+        Vector2 basePosition = FoxelineHelpers.getTailBasePosition(self);
 
         tails.EnsureTailsInitialized(tailCount);
         foreach (Tail tail in tails)
         {
             TailNode baseNode = tail.TailNodes[0];
 
-            baseNode.Offset = offset * faceDirection;
+            baseNode.Offset = basePosition * faceDirection;
 
             Vector2 oldPos = baseNode.Position;
             Vector2 newPos = self.Nodes[0] + baseNode.Offset;
