@@ -5,12 +5,7 @@ namespace Celeste.Mod.Foxeline;
 
 public static class FoxelineConst
 {
-    public const string Velocity = "foxeline_velocity";
-    public const string TailPositions = "foxeline_tail_pos";
-    public const string TailOffset = "foxeline_tail_offset";
-
     public const int Variants = 3;
-    public const string GravHelperFlip = "GravityHelper_Inverted";
     public const string smh_hairConfig = "smh_hairConfig";
 
     public static readonly Dictionary<string, Vector2> customTailPositions = new() {
@@ -63,25 +58,4 @@ public static class FoxelineConst
         {"roll", 1},
         {"rollGetUp", 1},
     };
-
-    public static readonly float[] tailSize = [3, 2, 1, 3, 1, 2, 2, 2];
-    public static readonly int[] tailID = [0, 2, 3, 4, 4, 3, 1, 0];
-    public static readonly int tailLen = tailSize.Length;
-
-    //instantiate the arrays once and keep them around to cut down on GC pressure
-    /// <summary>
-    ///   The order in which tails should be drawn, indexed by tail count.
-    /// </summary>
-    public static readonly int[][] tailDrawOrders = [
-        [], //no tails or invalid tail count
-        [0],
-        [1, 0],
-        [2, 0, 1],
-        [2, 1, 3, 0],
-        [4, 0, 3, 1, 2],
-        [5, 0, 3, 2, 4, 1],
-        [6, 0, 5, 1, 4, 2, 3],
-        [7, 0, 6, 1, 4, 3, 5, 2],
-        [8, 0, 7, 1, 6, 5, 2, 3, 4],
-    ];
 }

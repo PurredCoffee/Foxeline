@@ -29,7 +29,7 @@ public class FoxelineModuleSettings : EverestModuleSettings
     [SettingRange(25, 1000, true)]
     public int TailScale { get; set; } = 100;
 
-    [SettingRange(1, 9)]
+    [SettingRange(1, TailCollection.MaxTailCount)]
     public int TailCount { get; set; } = 1;
 
     [SettingSubText("Draw the outline of each tail separately instead of as a whole")]
@@ -161,7 +161,7 @@ public class FoxelineModuleSettings : EverestModuleSettings
         [SettingRange(25, 1000, true)]
         public int TailScale { get; set; } = 100;
 
-        [SettingRange(1, 9)]
+        [SettingRange(1, TailCollection.MaxTailCount)]
         public int TailCount { get; set; } = 1;
 
         [SettingSubText("Draw the outline of each tail separately instead of as a whole")]

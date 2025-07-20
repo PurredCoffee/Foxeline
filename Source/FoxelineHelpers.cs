@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Monocle;
 using MonoMod.Utils;
 using Celeste.Mod.CelesteNet.Client.Entities;
 using System.Runtime.CompilerServices;
@@ -173,16 +172,6 @@ public static class FoxelineHelpers
         => getTailScale(self) > 1;
 
     /// <summary>
-    /// Gets the order in which the tails should be drawn
-    /// </summary>
-    /// <param name="tailCount">Number of tails</param>
-    /// <returns>Array of tail indices in the order they should be drawn</returns>
-    public static int[] getTailOrder(int tailCount)
-        => tailCount is >= 0 and <= 9
-            ? FoxelineConst.tailDrawOrders[tailCount]
-            : FoxelineConst.tailDrawOrders[0];
-
-    /// <summary>
     /// Determines if the hair should be changed based on the settings
     /// </summary>
     /// <param name="self">The PlayerHair object</param>
@@ -248,60 +237,6 @@ public static class FoxelineHelpers
 
     #endregion
 
-    #region Tail data helpers
-
-    /// <summary>
-    /// Gets tail node positions for all tails.
-    /// </summary>
-    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    public static List<List<Vector2>> getAllTailPositions(DynamicData selfData)
-        => selfData.Get<List<List<Vector2>>>(FoxelineConst.TailPositions);
-
-    /// <summary>
-    /// Gets tail node offsets for all tails.
-    /// </summary>
-    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    public static List<List<Vector2>> getAllTailOffsets(DynamicData selfData)
-        => selfData.Get<List<List<Vector2>>>(FoxelineConst.TailOffset);
-
-    /// <summary>
-    /// Gets tail node velocities for all tails.
-    /// </summary>
-    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    public static List<List<Vector2>> getAllTailVelocities(DynamicData selfData)
-        => selfData.Get<List<List<Vector2>>>(FoxelineConst.Velocity);
-
-    internal static void ensureTailDataInitialized(DynamicData selfData, int tailCount)
-    {
-        List<List<Vector2>> allPositions = getAllTailPositions(selfData);
-        int tailsToAdd = tailCount - allPositions.Count;
-
-        if (tailsToAdd <= 0)
-            return;
-
-        //we only need these when we know we need to add new tail data lists
-        List<List<Vector2>> allOffsets = getAllTailOffsets(selfData);
-        List<List<Vector2>> allVelocities = getAllTailVelocities(selfData);
-
-        for (int iTail = 0; iTail < tailsToAdd; iTail++)
-        {
-            List<Vector2> positions = [];
-            List<Vector2> offsets = [];
-            List<Vector2> velocities = [];
-            for (int iTailNode = 0; iTailNode < FoxelineConst.tailLen; iTailNode++)
-            {
-                positions.Add(Vector2.Zero);
-                velocities.Add(Vector2.Zero);
-                offsets.Add(Vector2.Zero);
-            }
-            allPositions.Add(positions);
-            allOffsets.Add(offsets);
-            allVelocities.Add(velocities);
-        }
-    }
-
-    #endregion
-
     #region General helpers
 
     /// <summary>
@@ -358,135 +293,41 @@ public static class FoxelineHelpers
     #endregion
 
     /// <summary>
-    /// Clamps the tail node into reach of the previous tail node
+    /// Computes the smarter hair gradient.
     /// </summary>
-    /// <param name="tailPositions">List of tail positions to edit</param>
-    /// <param name="i">Tail index</param>
-    /// <param name="tailScale">Tail scale multiplier</param>
-    public static void clampTail(List<Vector2> tailPositions, int i, float tailScale)
+    /// <param name="self">
+    /// The <see cref="PlayerHair"/> object.
+    /// </param>
+    /// <param name="selfData">
+    /// The <see cref="DynamicData"/> object for the <see cref="PlayerHair"/> object.
+    /// </param>
+    /// <returns>
+    /// The smarter hair color gradient.
+    /// </returns>
+    public static Color[] getHairGradient(PlayerHair self, DynamicData selfData)
     {
-        Vector2 previousNode = tailPositions[i - 1];
-        Vector2 thisNode = tailPositions[i];
-        float thisNodeRadius = FoxelineConst.tailSize[i] * tailScale;
+        Color[] hairGradient = new Color[self.Sprite.HairCount];
+        for (int i = 0; i < hairGradient.Length; i++)
+            hairGradient[i] = getHairColor(i, self, selfData);
 
-        if (Vector2.Distance(previousNode, thisNode) <= thisNodeRadius)
-            //already in range
-            return;
-
-        Vector2 diff = previousNode - thisNode;
-        diff.Normalize();
-        tailPositions[i] = previousNode - diff * thisNodeRadius;
+        return hairGradient;
     }
 
     /// <summary>
-    /// Draws the tail of the player based on the tail positions defined under selfData and the hair offset
+    /// Gets a smarter hair color based on the player's current animation.
     /// </summary>
-    /// <param name="self">The PlayerHair object</param>
-    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    /// <param name="tailIndex">The tail index to draw</param>
-    public static void drawTailInner(PlayerHair self, DynamicData selfData, int tailIndex)
-    {
-        List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
-        int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
-
-        //fill in the hair gradient
-        Color[] gradient = new Color[self.Sprite.HairCount];
-        for (int iHairNode = 0; iHairNode < self.Sprite.HairCount; iHairNode++)
-            gradient[iHairNode] = getHairColor(iHairNode, self, selfData);
-
-        for (int iTailNode = FoxelineConst.tailLen - 1; iTailNode >= 0; iTailNode--)
-        {
-            float tailSoftness = (100 - FoxelineModule.Settings.FoxelineConstants.Softness) / 100f;
-            bool fill = iTailNode < FoxelineConst.tailLen * tailSoftness != getPaintBrushTail(self);
-
-            //fill color is either the hair color or a blend of the hair color at the tip of the tail
-            //and the base of the tail (sometimes visible)
-            float lerp = Math.Min((float)iTailNode / FoxelineConst.tailLen, 1) * self.Sprite.HairCount;
-            int hairNodeIndex = (int)lerp;
-            int nextHairNodeIndex = Math.Min(hairNodeIndex + 1, self.Sprite.HairCount - 1);
-            Color fullColor = Color.Lerp(gradient[hairNodeIndex], gradient[nextHairNodeIndex], lerp % 1);
-            Color color = fill
-                ? fullColor
-                : Color.Lerp(getTailBrushColor(self), fullColor, getTailBrushTint(self));
-
-            MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[iTailNode]];
-            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][iTailNode].Floor();
-            Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
-            float scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
-
-            tex.Draw(position, center, color, scale);
-        }
-    }
-
-    /// <summary>
-    /// Draws the outline of the tail of the player based on the tail positions defined under selfData and the hair offset
-    /// </summary>
-    /// <param name="self">The PlayerHair object to draw the tail next to</param>
-    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    /// <param name="tailIndex">The tail index to draw</param>
-    public static void drawTailOutline(PlayerHair self, DynamicData selfData, int tailIndex)
-    {
-        List<List<Vector2>> tailOffset = getAllTailOffsets(selfData);
-        int currentVariant = (int)getTailVariant(self) - 1 + FoxelineConst.Variants * (isBigTail(self) ? 1 : 0);
-        for (int iTailNode = FoxelineConst.tailLen - 1; iTailNode >= 0; iTailNode--)
-        {
-            //we select the current tail node. tailID is currently baked and chosen to be pretty
-            MTexture tex = FoxelineModule.Instance.tailtex[currentVariant][FoxelineConst.tailID[iTailNode]];
-
-            //we calculate the position of the texture by offsetting it by half its size
-            Vector2 position = self.Nodes[0].Floor() + tailOffset[tailIndex][iTailNode].Floor();
-            Vector2 center = Vector2.One * (float)Math.Floor(tex.Width / 2f);
-            float scale = getTailScale(self) / (isBigTail(self) ? 2 : 1);
-
-            tex.Draw(position + Vector2.UnitX, center, Color.Black, scale);
-            tex.Draw(position + Vector2.UnitY, center, Color.Black, scale);
-            tex.Draw(position - Vector2.UnitX, center, Color.Black, scale);
-            tex.Draw(position - Vector2.UnitY, center, Color.Black, scale);
-        }
-    }
-
-    /// <summary>
-    /// Draws the tail and outline of the player based on the tail positions defined under selfData and the hair offset
-    /// </summary>
-    /// <param name="self">The PlayerHair object</param>
-    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    public static void drawTails(PlayerHair self, DynamicData selfData)
-    {
-        if (!self.Visible || !self.Sprite.Visible)
-            return;
-
-        int tailCount = Math.Min(getTailCount(self), getAllTailOffsets(selfData).Count);
-        int[] drawOrder = getTailOrder(tailCount);
-
-        if (!getSeparateTails(self))
-        {
-            foreach (int tailIndex in drawOrder)
-                drawTailOutline(self, selfData, tailIndex);
-            foreach (int tailIndex in drawOrder)
-                drawTailInner(self, selfData, tailIndex);
-            return;
-        }
-
-        foreach (int tailIndex in drawOrder)
-        {
-            drawTailOutline(self, selfData, tailIndex);
-            drawTailInner(self, selfData, tailIndex);
-        }
-    }
-
-    public static void drawTailPositions(PlayerHair self, DynamicData selfData)
-    {
-        foreach (List<Vector2> pos in getAllTailPositions(selfData))
-            Draw.Point(pos[0], Color.Cyan);
-    }
-
-    /// <summary>
-    /// Helper function to get the hair color of the player based on the current animation
-    /// </summary>
-    /// <param name="hairNodeIndex">The index of the hair color</param>
-    /// <param name="self">The PlayerHair object</param>
-    /// <param name="selfData">The DynamicData object for the PlayerHair object</param>
-    /// <returns>The smarter hair color of the player</returns>
+    /// <param name="hairNodeIndex">
+    /// The index of the hair color
+    /// </param>
+    /// <param name="self">
+    /// The <see cref="PlayerHair"/> object.
+    /// </param>
+    /// <param name="selfData">
+    /// The <see cref="DynamicData"/> object for the <see cref="PlayerHair"/> object.
+    /// </param>
+    /// <returns>
+    /// The smarter hair color.
+    /// </returns>
     public static Color getHairColor(int hairNodeIndex, PlayerHair self, DynamicData selfData)
     {
         //only do this if:
@@ -507,7 +348,8 @@ public static class FoxelineHelpers
         if (selfData.TryGet(FoxelineConst.smh_hairConfig, out var hairConfig))
         {
             //anything can be null here - use null conditional operator to avoid null reference exceptions
-            if (hairConfig?.GetType().GetField("ActualHairColors")?.GetValue(hairConfig) is Dictionary<int, List<Color>> hairColors)
+            if (hairConfig?.GetType().GetField("ActualHairColors")?.GetValue(hairConfig)
+                is Dictionary<int, List<Color>> hairColors)
             {
                 const int DefaultHairColorIndex = 100;
                 //we found something that looks like a hairConfig from SMH PLUS
@@ -533,8 +375,7 @@ public static class FoxelineHelpers
         }
 
         //VANILLA FALLBACK
-        return dashes switch
-        {
+        return dashes switch {
             0 => Player.UsedHairColor,
             1 => Player.NormalHairColor,
             2 => Player.TwoDashesHairColor,

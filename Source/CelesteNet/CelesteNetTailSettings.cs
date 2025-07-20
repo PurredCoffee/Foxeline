@@ -111,7 +111,7 @@ public class CelesteNetTailSettings : DataType<CelesteNetTailSettings>
             Tail = (TailVariant)reader.ReadByte(),
             TailBrushTint = reader.ReadByte(),
             TailBrushColor = reader.ReadColorNoA(),
-            TailCount = Math.Max((byte)1, Math.Min(reader.ReadByte(), (byte)9)),
+            TailCount = Math.Max((byte)1, Math.Min(reader.ReadByte(), (byte)TailCollection.MaxTailCount)),
             TailScale = Math.Min(reader.ReadUInt16(), FoxelineModule.Settings.FoxelineConstants.ClampCelesteNetTailSize),
             TailSpread = Math.Min(reader.ReadByte(), (byte)100),
             FeatherTail = reader.ReadBoolean(),
