@@ -38,8 +38,8 @@ public class FoxelineModule : EverestModule
     }
 
 
-    public List<MTexture>[] tailtex;
-    public List<MTexture> bangs;
+    public List<MTexture>[] TailNodeTextures;
+    public List<MTexture> BangsTextures;
 
     public override void Load()
     {
@@ -58,16 +58,15 @@ public class FoxelineModule : EverestModule
     #endif
     }
 
-
     public override void LoadContent(bool inGame)
     {
-        tailtex = new List<MTexture>[FoxelineConst.Variants * 2];
+        TailNodeTextures = new List<MTexture>[FoxelineConst.Variants * 2];
         for (int variant = 0; variant < FoxelineConst.Variants; variant++)
         {
-            tailtex[variant] = GFX.Game.GetAtlasSubtextures($"Foxeline/tail/variant_{variant}/tail");
-            tailtex[variant + FoxelineConst.Variants] = GFX.Game.GetAtlasSubtextures($"Foxeline/tail/variant_{variant}/tail_resize");
+            TailNodeTextures[variant] = GFX.Game.GetAtlasSubtextures($"Foxeline/tail/variant_{variant}/tail");
+            TailNodeTextures[variant + FoxelineConst.Variants] = GFX.Game.GetAtlasSubtextures($"Foxeline/tail/variant_{variant}/tail_resize");
         }
-        bangs = GFX.Game.GetAtlasSubtextures("Foxeline/bangs/bangs");
+        BangsTextures = GFX.Game.GetAtlasSubtextures("Foxeline/bangs/bangs");
     }
 
     public override void Unload()

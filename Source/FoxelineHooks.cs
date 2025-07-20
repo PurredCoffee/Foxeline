@@ -248,8 +248,8 @@ public static class FoxelineHooks
         if (index != 0 || !FoxelineHelpers.shouldChangeHair(self))
             return orig(self, index);
 
-        int bangsFrame = Calc.Clamp(self.Sprite.HairFrame, 0, FoxelineModule.Instance.bangs.Count - 1);
-        return FoxelineModule.Instance.bangs[bangsFrame];
+        int bangsFrame = Calc.Clamp(self.Sprite.HairFrame, 0, FoxelineModule.Instance.BangsTextures.Count - 1);
+        return FoxelineModule.Instance.BangsTextures[bangsFrame];
     }
 
     //render the exact positions the tail(s) will grow out of for debugging help

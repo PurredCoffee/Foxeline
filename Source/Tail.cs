@@ -116,7 +116,7 @@ public class Tail
 
         foreach (TailNode node in TailNodes.Reverse())
         {
-            MTexture tex = FoxelineModule.Instance.tailtex[tailVariant][node.TextureId];
+            MTexture tex = FoxelineModule.Instance.TailNodeTextures[tailVariant][node.TextureId];
             Vector2 position = hair.Nodes[0].Floor() + node.Offset.Floor();
 
             tex.DrawCentered(position + Vector2.UnitX, Color.Black, tailScale);
@@ -161,7 +161,7 @@ public class Tail
                 //it's considered a paint brush node, tint it
                 color = Color.Lerp(tailBrushColor, color, tailBrushTint);
 
-            MTexture tex = FoxelineModule.Instance.tailtex[tailVariant][node.TextureId];
+            MTexture tex = FoxelineModule.Instance.TailNodeTextures[tailVariant][node.TextureId];
             Vector2 position = hair.Nodes[0].Floor() + node.Offset.Floor();
 
             tex.DrawCentered(position, color, tailScale);
