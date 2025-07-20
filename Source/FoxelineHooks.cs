@@ -46,7 +46,7 @@ public static class FoxelineHooks
         //the position the tails will grow out of
         Vector2 basePosition = FoxelineHelpers.getTailBasePosition(self);
 
-        tails.EnsureTailsInitialized(tailCount);
+        tails.EnsureTailsInitialized();
         foreach (Tail tail in tails)
         {
             TailNode baseNode = tail.TailNodes[0];

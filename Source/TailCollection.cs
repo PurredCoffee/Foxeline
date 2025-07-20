@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using MonoMod.Utils;
@@ -91,18 +92,15 @@ public class TailCollection : IReadOnlyList<Tail>
     {
         Hair = hair;
         Tails = [];
-        EnsureTailsInitialized(FoxelineHelpers.getTailCount(hair));
+        EnsureTailsInitialized();
     }
 
     /// <summary>
-    /// Ensures that there are at least <paramref name="tailCount"/> tails in the collection.
+    /// Ensures that the number of tails in the collection is at least equal to the number of tails from the settings.
     /// </summary>
-    /// <param name="tailCount">
-    /// The expected number of tails in the collection.
-    /// </param>
-    public void EnsureTailsInitialized(int tailCount)
+    public void EnsureTailsInitialized()
     {
-        for (int iTail = Count; iTail < tailCount; iTail++)
+        for (int iTail = Count; iTail < FoxelineHelpers.getTailCount(Hair); iTail++)
             Tails.Add(new Tail(this, iTail));
     }
 
@@ -115,7 +113,7 @@ public class TailCollection : IReadOnlyList<Tail>
     /// </param>
     public void InitializeTailPositions(Vector2 startPosition)
     {
-        foreach (Tail tail in Tails)
+        foreach (Tail tail in this)
             tail.InitializePositions(startPosition);
     }
 
@@ -128,7 +126,7 @@ public class TailCollection : IReadOnlyList<Tail>
     /// </param>
     public void MoveTailsBy(Vector2 amount)
     {
-        foreach (Tail tail in Tails)
+        foreach (Tail tail in this)
             tail.MoveBy(amount);
     }
 
@@ -177,18 +175,59 @@ public class TailCollection : IReadOnlyList<Tail>
     }
 
     /// <summary>
-    /// Gets size of the tails collection. May be larger than the tail count in settings.
+    /// Gets the number of tails from settings. May be less than the number of tails in the collection.
     /// </summary>
-    /// <seealso cref="FoxelineHelpers.getTailCount"/>
-    public int Count => Tails.Count;
+    public int Count => Math.Min(FoxelineHelpers.getTailCount(Hair), Tails.Count);
 
     /// <inheritdoc />
     public IEnumerator<Tail> GetEnumerator()
-        => Tails.GetEnumerator();
+        => new TailEnumerator(this);
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
+
+    private sealed class TailEnumerator(TailCollection tails) : IEnumerator<Tail>
+    {
+        private TailCollection Tails = tails;
+        private int Count = tails.Count;
+        private int TailIndex = -1;
+
+        /// <inheritdoc />
+        public bool MoveNext()
+        {
+            if (TailIndex == Count - 1)
+                return false;
+
+            Current = Tails[++TailIndex];
+            return true;
+        }
+
+        /// <inheritdoc />
+        public void Reset()
+        {
+            TailIndex = -1;
+            Count = Tails.Count;
+            Current = null;
+        }
+
+        /// <inheritdoc />
+        public Tail Current { get; private set; }
+
+        /// <inheritdoc />
+        object IEnumerator.Current => Current;
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            ObjectDisposedException.ThrowIf(Tails is null, this);
+
+            Tails = null;
+            Count = -1;
+            TailIndex = -1;
+            Current = null;
+        }
+    }
 
     #endregion
 }
