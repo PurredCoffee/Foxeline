@@ -44,6 +44,11 @@ public class TailNode
     public readonly int TextureId;
 
     /// <summary>
+    /// The normalized (between 0 and 1, inclusive) <see cref="TailNodeIndex"/>.
+    /// </summary>
+    public readonly float NormalizedTailNodeIndex;
+
+    /// <summary>
     /// The absolute node position.
     /// </summary>
     public Vector2 Position = Vector2.Zero;
@@ -73,5 +78,7 @@ public class TailNode
         TailNodeIndex = tailNodeIndex;
         NodeSize = NodeSizes[tailNodeIndex];
         TextureId = NodeTextureId[tailNodeIndex];
+
+        NormalizedTailNodeIndex = (float)tailNodeIndex / Tail.TailNodeCount;
     }
 }

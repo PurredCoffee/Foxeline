@@ -149,12 +149,10 @@ public class Tail
 
         foreach (TailNode node in TailNodes.Reverse())
         {
-            int nodeIndex = node.TailNodeIndex;
-
-            bool isPaintBrushNode = nodeIndex < TailNodeCount * tailSoftness;
+            bool isPaintBrushNode = node.TailNodeIndex < TailNodeCount * tailSoftness;
 
             //fill color is either a hair node color, or an interpolated hair color between the two nearest nodes
-            float lerp = Math.Min((float)nodeIndex / TailNodeCount, 1) * hairCount;
+            float lerp = Math.Min(node.NormalizedTailNodeIndex, 1) * hairCount;
             int hairNodeIndex = (int)lerp;
             int nextHairNodeIndex = Math.Min(hairNodeIndex + 1, hairCount - 1);
             Color color = Color.Lerp(hairGradient[hairNodeIndex], hairGradient[nextHairNodeIndex], lerp % 1);

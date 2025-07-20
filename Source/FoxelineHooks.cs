@@ -85,10 +85,10 @@ public static class FoxelineHooks
                 }
                 else if (self.SimulateMotion)
                 {
-                    float normalizedTailNode = (float)i / Tail.TailNodeCount;
+                    float normalizedIndex = thisNode.NormalizedTailNodeIndex;
 
                     //this equation moves the points along an S-ish shape one behind the other
-                    float x = (normalizedTailNode - 0.5f) * 2;
+                    float x = (normalizedIndex - 0.5f) * 2;
                     if (x < 0)
                         x = (float)Math.Sqrt(-x);
 
@@ -100,9 +100,9 @@ public static class FoxelineHooks
                     if (droopTail)
                     {
                         float t = Engine.FrameCounter / swaySpeed;
-                        float swayOffsetPerNode = normalizedTailNode * thisNode.NodeSize * swayFrequency;
+                        float swayOffsetPerNode = normalizedIndex * thisNode.NodeSize * swayFrequency;
 
-                        float targetSwayX = normalizedTailNode * swayAmplitude * MathF.Sin(t - swayOffsetPerNode);
+                        float targetSwayX = normalizedIndex * swayAmplitude * MathF.Sin(t - swayOffsetPerNode);
 
                         tailDir = new Vector2(targetSwayX, 1);
                     }
@@ -154,7 +154,7 @@ public static class FoxelineHooks
                         //i just made up some formula with some trial and error, and it looks good...? i guess?
                         //- Snip
                         thisNode.Velocity = thisNode.Velocity with {
-                            Y = MathF.Exp(normalizedTailNode) + thisNode.NodeSize
+                            Y = MathF.Exp(normalizedIndex) + thisNode.NodeSize
                         };
 
                     //the tail then updates its positon based on how much it was accelerated
