@@ -360,7 +360,7 @@ public static class FoxelineHelpers
                     //fallback to default hair color if the hairConfig is broken
                     hairNodeIndex = DefaultHairColorIndex;
 
-                dashes = Math.Max(Math.Min(dashes, hairColors[hairNodeIndex].Count - 1), 0);
+                dashes = Calc.Clamp(hairColors[hairNodeIndex].Count - 1, 0, dashes);
                 return hairColors[hairNodeIndex][dashes];
             }
         }
