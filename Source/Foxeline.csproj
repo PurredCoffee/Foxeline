@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <AssemblyName>Foxeline</AssemblyName>
         <RootNamespace>Celeste.Mod.Foxeline</RootNamespace>
         <LangVersion>latest</LangVersion>
@@ -17,7 +17,7 @@
     </ItemDefinitionGroup>
 
     <ItemGroup>
-        <PackageReference Include="MonoMod.RuntimeDetour" Version="25.0.2" PrivateAssets="all" ExcludeAssets="runtime" />
+        <PackageReference Include="MonoMod.RuntimeDetour" Version="25.2.3" PrivateAssets="all" ExcludeAssets="runtime" />
         <PackageReference Include="MonoMod.Patcher" Version="25.0.0-prerelease.2" />
         <PackageReference Include="CelesteAnalyzer" Version="*" />
         <PackageReference Include="YamlDotNet" Version="16.1.3" />
@@ -27,8 +27,8 @@
         <PackageReference Include="CelesteMod.Publicizer" Version="*" CelesteAssembly="$(CelestePrefix)\Celeste.dll" />
         <Reference Include="$(CelestePrefix)\MMHOOK_Celeste.dll" Private="false" />
         <Reference Include="$(CelestePrefix)\FNA.dll" Private="false" />
-        <Reference Include="..\..\CelesteNet.Client\CelesteNet.Client.dll" Private="false" />
-        <Reference Include="..\..\CelesteNet.Client\CelesteNet.Shared.dll" Private="false" />
+        <Reference Include="$(CelestePrefix)\Mods\Cache\CelesteNet.Client.CelesteNet.Client.dll" Private="false" />
+        <Reference Include="$(CelestePrefix)\Mods\Cache\CelesteNet.Client.CelesteNet.Shared.dll" Private="false" />
     </ItemGroup>
 
     <Target Name="CopyFiles" AfterTargets="Build" Inputs="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb" Outputs="..\bin\$(AssemblyName).dll;..\bin\$(AssemblyName).pdb">

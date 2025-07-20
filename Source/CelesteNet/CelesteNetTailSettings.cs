@@ -7,9 +7,12 @@ namespace Celeste.Mod.Foxeline.CelesteNet;
 
 #region Versioned packet
 
-public class TailData : DataType<TailData>
+/// <summary>
+/// Packet containing players' Foxeline tail settings.
+/// </summary>
+public class CelesteNetTailSettings : DataType<CelesteNetTailSettings>
 {
-    static TailData()
+    static CelesteNetTailSettings()
     {
         //the unversioned packet didn't have this set; which means the packet id was an empty string
         //turns out that that's a happy accident, since now i don't have to worry about backwards compatibility
@@ -30,9 +33,14 @@ public class TailData : DataType<TailData>
     public DataPlayerInfo Player;
     public FoxelineModuleSettings.TailDefaults TailInformation;
 
-    public TailData() {}
+    //this empty constructor is necessary - when receiving a packet, the parameterless .ctor() is dynamically invoked
+    //and then its Read() is called
+    public CelesteNetTailSettings()
+    {
+    }
 
-    public TailData(DataPlayerInfo player) {
+    public CelesteNetTailSettings(DataPlayerInfo player)
+    {
         Player = player;
         TailInformation = new FoxelineModuleSettings.TailDefaults {
             SeparateTails = FoxelineModule.Settings.SeparateTails,
@@ -47,21 +55,25 @@ public class TailData : DataType<TailData>
         };
     }
 
+    //false if the packet should be ignored, true otherwise
     public override bool FilterHandle(DataContext ctx)
         => Player != null;
 
+    //i. i genuinely am not sure what the meta methods do
     public override MetaType[] GenerateMeta(DataContext ctx) => [
         new MetaPlayerPrivateState(Player),
         new MetaBoundRef(DataType<DataPlayerInfo>.DataID, Player?.ID ?? uint.MaxValue, true),
     ];
 
-    public override void FixupMeta(DataContext ctx) {
+    public override void FixupMeta(DataContext ctx)
+    {
         Player = Get<MetaPlayerPrivateState>(ctx);
         Get<MetaBoundRef>(ctx).ID = Player?.ID ?? uint.MaxValue;
     }
 
     private static bool HasReceivedUnrecognizedPacket;
 
+    //called from CelesteNet when this packet is received
     protected override void Read(CelesteNetBinaryReader reader)
     {
         PacketVersion = reader.ReadUInt16();
@@ -99,7 +111,7 @@ public class TailData : DataType<TailData>
             Tail = (TailVariant)reader.ReadByte(),
             TailBrushTint = reader.ReadByte(),
             TailBrushColor = reader.ReadColorNoA(),
-            TailCount = Math.Max((byte)1, Math.Min(reader.ReadByte(), (byte)9)),
+            TailCount = Math.Max((byte)1, Math.Min(reader.ReadByte(), (byte)TailCollection.MaxTailCount)),
             TailScale = Math.Min(reader.ReadUInt16(), FoxelineModule.Settings.FoxelineConstants.ClampCelesteNetTailSize),
             TailSpread = Math.Min(reader.ReadByte(), (byte)100),
             FeatherTail = reader.ReadBoolean(),
@@ -108,7 +120,9 @@ public class TailData : DataType<TailData>
 
     #endregion
 
-    protected override void Write(CelesteNetBinaryWriter writer) {
+    //called from CelesteNet when this packet is sent
+    protected override void Write(CelesteNetBinaryWriter writer)
+    {
         writer.Write(LatestPacketVersion);
         writer.Write(TailInformation.SeparateTails);
         writer.Write((byte)TailInformation.Tail);
@@ -120,7 +134,6 @@ public class TailData : DataType<TailData>
         writer.Write(TailInformation.FeatherTail);
         writer.Write(TailInformation.PaintBrushTail);
     }
-
 }
 
 #endregion
