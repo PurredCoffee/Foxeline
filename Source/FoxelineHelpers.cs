@@ -185,13 +185,16 @@ public static class FoxelineHelpers
 
     #region Animation helpers
 
+    // apparently SMH+ can make hair.Sprite null when using a player resprite trigger?
+    // be careful when accessing sprite properties
+
     /// <summary>
     /// Determines whether the player hair is crouched.
     /// </summary>
     /// <param name="hair">The player hair.</param>
     /// <returns><c>true</c> if the player hair is crouched; otherwise, <c>false</c>.</returns>
     public static bool isCrouched(PlayerHair hair)
-        => hair is { Sprite.LastAnimationID: "duck" or "slide" or "hug" };
+        => hair.Sprite?.LastAnimationID is "duck" or "slide" or "hug";
 
     /// <summary>
     /// Determines whether the player's hair should droop the tail.
@@ -199,8 +202,8 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the hair should droop the tail; otherwise, <c>false</c>.</returns>
     public static bool shouldDroopTail(PlayerHair hair)
-        => hair is { Sprite.LastAnimationID: "launch" or "spin" }
-            || (hair.Entity is Player && hair.Sprite.EntityAs<Player>().Stamina <= Player.ClimbTiredThreshold);
+        => hair.Sprite?.LastAnimationID is "launch" or "spin"
+            || hair.Entity is Player { Stamina: <= Player.ClimbTiredThreshold };
 
     /// <summary>
     /// Determines whether the tail should be flipped based on the current animation ID of the player's hair.
@@ -208,10 +211,8 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the tail should be flipped; otherwise, <c>false</c>.</returns>
     public static bool shouldFlipTail(PlayerHair hair)
-        => hair is {
-            Sprite.LastAnimationID: "asleep" or "bagDown" or "edgeBack" or "halfWakeUp" or "sitDown" or "sleep"
-            or "wakeUp"
-        };
+        => hair.Sprite?.LastAnimationID is "asleep" or "bagDown" or "edgeBack" or "halfWakeUp" or "sitDown" or "sleep"
+            or "wakeUp";
 
     /// <summary>
     /// Determines whether the tail should be laying on the ground based on the current animation ID of the player's hair.
@@ -219,10 +220,8 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the tail should be laying on the ground; otherwise, <c>false</c>.</returns>
     public static bool shouldRestTail(PlayerHair hair)
-        => hair is {
-            Sprite.LastAnimationID: "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
-            or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp"
-        };
+        => hair.Sprite?.LastAnimationID is "asleep" or "bagDown" or "carryTheoCollapse" or "downed" or "halfWakeUp"
+            or "roll" or "rollGetUp" or "sitDown" or "sleep" or "wakeUp";
 
     /// <summary>
     /// Determines whether the tail of the player's hair should be stretched.
@@ -230,10 +229,8 @@ public static class FoxelineHelpers
     /// <param name="hair">The player's hair.</param>
     /// <returns><c>true</c> if the tail should be stretched; otherwise, <c>false</c>.</returns>
     public static bool shouldStretchTail(PlayerHair hair)
-        => hair is {
-                Sprite.LastAnimationID: "dangling" or "edge" or "edgeBack" or "idleC" or "runWind" or "shaking"
-                or "tired" or "tiredStill"
-            }
+        => hair.Sprite?.LastAnimationID is "dangling" or "edge" or "edgeBack" or "idleC" or "runWind" or "shaking"
+            or "tired" or "tiredStill"
             || isCrouched(hair);
 
     #endregion
