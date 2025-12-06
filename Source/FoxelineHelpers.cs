@@ -396,7 +396,7 @@ public static class FoxelineHelpers
     /// </returns>
     public static Vector2 getTailBasePosition(PlayerHair self)
     {
-        if (FoxelineConst.customTailPositions.TryGetValue(self.Sprite.LastAnimationID, out Vector2 offset))
+        if (FoxelineConst.customTailPositions.TryGetValue(self.Sprite?.LastAnimationID ?? "", out Vector2 offset))
             //use custom tail center
             return offset;
 
