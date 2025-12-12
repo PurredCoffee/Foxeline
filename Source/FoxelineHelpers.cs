@@ -336,7 +336,7 @@ public static class FoxelineHelpers
         if (!FoxelineModule.Settings.FixCutscenes || self.Entity is not Player player)
             return self.GetHairColor(hairNodeIndex);
 
-        Dictionary<string, int> cutsceneToDashLookup = self.Sprite.EntityAs<Player>().Inventory.Backpack
+        Dictionary<string, int> cutsceneToDashLookup = self.Sprite.EntityAs<Player>()?.Inventory.Backpack ?? false
             ? FoxelineConst.backpackCutscenes
             : FoxelineConst.noBackpackCutscenes;
 
